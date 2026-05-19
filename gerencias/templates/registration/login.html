@@ -1,0 +1,21 @@
+{% extends 'bases.html' %}
+
+{% block page_title %}
+    PÁGINA DE LOGIN
+{% endblock%}
+
+{% block container %}
+    <div class="card">
+        <div class="card-head">
+            <h5 class="card-title">FAZER LOGIN</h5>
+        </div>
+        <div class="container-fluid">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary btn-sm">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock%}

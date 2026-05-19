@@ -1,0 +1,69 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    LISTA DE RESPONSAVEIS
+{% endblock %}
+{% block container %}
+    {% csrf_token %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>DT CADASTRO</th>
+                <th>DT ATUALIZAÇÃO</th>
+                <th>NOME</th>
+                <th>CPF</th>
+                <th>END/COMP</th>
+                <th>BAIRRO</th>
+                <th>CIDADE/UF</th>
+                <th>RESP TRABALHA</th>
+                <th>CASADA(O)</th>
+                <th>CONJ TRABALHA</th>
+                <th>VALIDADO</th>
+                <th>EDITAR</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in dados %}
+                <tr>
+                    <td>{{ item.id_responsavel }}</td>
+                    <td>{{ item.data_cadastro|date:"d/m/Y H:i"|default:"—"}}</td>
+                    <td>{{ item.ultima_atualizacao|date:"d/m/Y H:i"|default:"—"}}</td>
+                    <td>{{ item.pnome }} {{ item.snome }}</td>
+                    <td>{{ item.cpf }}</td>
+                    <td>{{ item.endereco }} / {{ item.complemento }}</td>
+                    <td>{{ item.bairro }}</td>
+                    <td>{{ item.cidade }}/{{ item.estado }}</td>
+                    <td>{{ item.flag_responsavel_trabalha }}</td>
+                    <td>{{ item.flag_conjuge|default:"—" }}</td>
+                    <td>{{ item.flag_conjuge_trabalha|default:"—" }}</td>
+                    <td>{{ item.flag_validado|default:"—" }}</td>
+                    <td><a href="{% url 'edit_responsavel' id_responsavel=item.id_responsavel %}" class="btn btn-primary btn-sm">
+                            Editar
+                        </a>
+                    </td>
+                    <td><a href="{% url 'lista_filhos' id_responsavel=item.id_responsavel %}" class="btn btn-primary btn-sm">
+                            Filhos
+                        </a>
+                    </td>
+                    <td><a href="{% url 'reativar_responsavel' id_responsavel=item.id_responsavel %}" class="btn btn-primary btn-sm">
+                            Reativar
+                        </a>
+                    </td>      
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">Nenhum registro encontrado.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        function confirmarAtualizacao() {
+            if (confirm('Tem certeza que deseja continuar?')) {
+                window.location.href = "{% url 'insere_novo_funcionario' %}";
+            }
+        }
+    </script>
+
+{% endblock %}

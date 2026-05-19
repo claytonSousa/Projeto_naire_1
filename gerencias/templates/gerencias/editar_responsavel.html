@@ -1,0 +1,154 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    EDITA RESPONSÁVEL
+{% endblock %}
+
+{% block container %}
+    
+    {% for item in dados %}
+        <form action="{% url 'atualiza_responsavel' %}" method="POST" >
+            {% csrf_token %}
+            <input type="text" style="visibility: hidden;" name="id_responsavel" placeholder={{ item.id_responsavel }} value={{ item.id_responsavel }}  readonly>
+            <br><br>
+            <input type="text" name="pnome" placeholder={{ item.pnome }} value={{ item.pnome }}>
+            <br><br>
+            <input type="text" name="snome" placeholder="{{ item.snome }}" value="{{ item.snome }}">
+            <br><br>
+            <input type="text" name="cpf" placeholder={{ item.cpf }} value={{ item.cpf }}>
+            <br><br>
+            <input type="text" name="dt_nasc" placeholder={{ item.data_nascimento }} value={{ item.data_nascimento }}>
+            <br><br>
+            <label>TRABALHA?</label>
+                {% if item.flag_responsavel_trabalha == 'N'%}
+                    <select  name="resp_trabalha" placeholder={{ item.flag_responsavel_trabalha }} value={{ item.flag_responsavel_trabalha }}>
+                        <option value="N" selected>Não</option>
+                        <option value="S">Sim</option>
+                    </select>
+                {% else %}
+                    <select  name="resp_trabalha" placeholder={{ item.flag_responsavel_trabalha }} value={{ item.flag_responsavel_trabalha }}>
+                        <option value="N">Não</option>
+                        <option value="S" selected>Sim</option>
+                    </select>
+                {% endif %}
+            <br><br>
+            <label>CASADA(O)?</label>
+                {% if item.flag_conjuge == 'N'%}
+                    <select  name="flag_conjuge" placeholder={{ item.flag_conjuge }} value={{ item.flag_conjuge }}>
+                        <option value="N" selected>Não</option>
+                        <option value="S">Sim</option>
+                    </select>
+                {% else %}
+                    <select  name="flag_conjuge" placeholder={{ item.flag_conjuge }} value={{ item.flag_conjuge }}>
+                        <option value="N">Não</option>
+                        <option value="S" selected>Sim</option>
+                    </select>
+                {% endif %}
+            <br><br>
+            <label>CONJUGUE TRABALHA?</label>
+                {% if item.conjuge_trabalha == 'N'%}
+                    <select  name="conjuge_trabalha" placeholder={{ item.flag_conjuge_trabalha }} value={{ item.flag_conjuge_trabalha }}>
+                        <option value="N" selected>Não</option>
+                        <option value="S">Sim</option>
+                    </select>
+                {% else %}
+                    <select  name="conjuge_trabalha" placeholder={{ item.flag_conjuge_trabalha }} value={{ item.flag_conjuge_trabalha }}>
+                        <option value="N">Não</option>
+                        <option value="S" selected>Sim</option>
+                    </select>
+                {% endif %}
+            <br><br>
+            <input type="text" name="endereco" placeholder="{{ item.endereco }}" value="{{ item.endereco }}">
+            <br><br>
+            <input type="text" name="complemento" placeholder="{{ item.complemento|default:"" }}" value="{{ item.complemento|default:"" }}" >
+            <br><br>
+            <input type="text" name="bairro" placeholder="{{ item.bairro }}" value="{{ item.bairro }}">
+            <br><br>
+            <input type="text" name="cidade" placeholder="{{ item.cidade }}" value="{{ item.cidade }}">
+            <br><br>
+            <input type="text" name="estado" placeholder="{{ item.estado }}" value="{{ item.estado }}">
+            <br><br>
+            <label>UF</label>
+                {% if item.estado == 'SP' %}
+                    <select  name="estado">
+                        <option value="SP" selected>SP</option>
+                        <option value="RJ">RJ</option>
+                        <option value="MG">MG</option>
+                        <option value="SC">SC</option>
+                        <option value="BA">BA</option>
+                        <option value="AM">AM</option>
+                    </select>
+                {% elif item.estado == 'RJ' %}
+                    <select  name="estado">
+                        <option value="SP">SP</option>
+                        <option value="RJ" selected>RJ</option>
+                        <option value="MG">MG</option>
+                        <option value="SC">SC</option>
+                        <option value="BA">BA</option>
+                        <option value="AM">AM</option>
+                    </select>
+                {% elif item.estado == 'MG' %}
+                    <select  name="estado">
+                        <option value="SP">SP</option>
+                        <option value="RJ">RJ</option>
+                        <option value="MG" selected>MG</option>
+                        <option value="SC">SC</option>
+                        <option value="BA">BA</option>
+                        <option value="AM">AM</option>
+                    </select>
+                {% elif item.estado == 'SC' %}
+                    <select  name="estado">
+                        <option value="SP">SP</option>
+                        <option value="RJ">RJ</option>
+                        <option value="MG">MG</option>
+                        <option value="SC" selected>SC</option>
+                        <option value="BA">BA</option>
+                        <option value="AM">AM</option>
+                    </select>
+                {% elif item.estado == 'RJ' %}
+                    <select  name="estado">
+                        <option value="SP">SP</option>
+                        <option value="RJ">RJ</option>
+                        <option value="MG">MG</option>
+                        <option value="SC">SC</option>
+                        <option value="BA" selected>BA</option>
+                        <option value="AM">AM</option>
+                    </select>
+                {% else %}
+                    <select  name="estado">
+                        <option value="SP">SP</option>
+                        <option value="RJ">RJ</option>
+                        <option value="MG">MG</option>
+                        <option value="SC">SC</option>
+                        <option value="BAN">BA</option>
+                        <option value="AM" selected>AM</option>
+                    </select>
+                {% endif %}
+            <br><br>
+            <label>VALIDADO</label>
+            <select  name="validado" placeholder={{ item.flag_validado }}>
+                <option value="N">Não</option>
+                <option value="S" selected>Sim</option>
+            </select>
+            <br><br>
+            <label>ATIVO</label>
+            <select  name="ativo" placeholder={{ item.flag_ativo }}>
+                <option value="N">Não</option>
+                <option value="S" selected>Sim</option>
+            </select>
+            <br><br>
+            <input type="submit" value="Atualizar" class="btn btn-primary sm" method="POST" onclick="confirmarAtualizacao()">
+                <a href="{% url 'lista_responsavel' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+        </form>
+        <script>
+            function confirmarAtualizacao() {
+                if (confirm('Tem certeza que deseja continuar?')) {
+                    window.location.href = "{% url 'atualiza_responsavel' %}";
+                }
+            }
+        </script>
+    {% endfor %}
+       
+{% endblock %}

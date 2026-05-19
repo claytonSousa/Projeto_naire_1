@@ -1,0 +1,21 @@
+{% extends 'bases.html' %}
+
+{% block page_title %}
+    PÁGINA DE LOGIN
+{% endblock%}
+
+{% block container %}
+    <div class="card">
+        <div class="card-head">
+            <h5 class="card-title">REGISTRO DE USUARIO</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-success">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock%}

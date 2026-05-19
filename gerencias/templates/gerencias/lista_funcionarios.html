@@ -1,0 +1,54 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    LISTA FUNCIONÁRIOS
+{% endblock %}
+{% block container %}
+    {% csrf_token %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">NOME</th>
+                <th scope="col">CPF</th>
+                <th scope="col">TELEFONE</th>
+                <th scope="col">RUA/Nº</th>
+                <th scope="col">COMPLEMENTO</th>
+                <th scope="col">BAIRRO</th>
+                <th scope="col">CIDADE</th>
+                <th scope="col">ESTADO</th>
+                <th scope="col">ATIVO</th>
+                <th scope="col">EDITAR</th>
+                <th scope="col">DESATITAR</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for funcionario in lista %}
+                <tr>
+                    <td>{{ funcionario.id_funcionario }}</td>
+                    <td>{{ funcionario.pnome }} {{ funcionario.snome }}</td>
+                    <td>{{ funcionario.cpf }}</td>
+                    <td>{{ funcionario.telefone }}</td>
+                    <td>{{ funcionario.endereco }}</td>
+                    <td>{{ funcionario.complemento }}</td>
+                    <td>{{ funcionario.bairro }}</td>
+                    <td>{{ funcionario.cidade }}</td>
+                    <td>{{ funcionario.estado }}</td>
+                    <td>{{ funcionario.flag_ativo}}</td>
+                    <td>
+                        <a href="{% url 'editar_funcionario' id_funcionario=funcionario.id_funcionario %}" class="btn btn-primary btn-sm">EDITAR</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'desativa_funcionario' id_funcionario=funcionario.id_funcionario %}" class="btn btn-primary btn-sm">DESATIVAR</a>
+                    </td>
+                </tr>   
+            
+        </tbody>
+        {% empty %}
+            <tr>
+                <td colspan="7">Nenhum registro encontrado.</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    CADASTRO DE FAMÍLIA
+{% endblock %}
+{% block container %}
+    <br><br>
+    <div>
+        <h3>NOVO RESPONSÁVEL</h3>
+        <form action="{% url 'insere_novo_responsavel' %}" method="POST" >
+            {% csrf_token %}
+            <input type="hidden" placeholder="ID USUÁRIO" name="id_usuario_cad" value={{ user.id }}>
+            <input type="text" placeholder="NOME" name="pnome">
+            <br><br>
+            <input type="text" placeholder="SOBRENOME" name="snome">
+            <br><br>
+            <input type="text" placeholder="CPF" name="cpf">
+            <br><br>
+            <input type="text" placeholder="DT. NASCIMENTO" name="dt_nasc">
+            <br><br>
+            <label>TRABALHA?</label>
+             <select  name="resp_trabalha">
+                <option value="N">Não</option>
+                <option value="S">Sim</option>
+            </select>
+            <br><br>
+            <label>CASADA(O)?</label>
+             <select  name="flag_conjuge">
+                <option value="N">Não</option>
+                <option value="S">Sim</option>
+            </select>
+            <br><br>
+            <label>CONJUGUE TRABALHA?</label>
+             <select  name="conjuge_trabalha">
+                <option value="N">Não</option>
+                <option value="S">Sim</option>
+            </select>
+            <br><br>
+            <input type="text" placeholder="RUA, NÚMERO" name="endereco">
+            <br><br>
+            <input type="text" placeholder="COMPLEMENTO" name="complemento">
+            <br><br>
+            <input type="text" placeholder="BAIRRO" name="bairro">
+            <br><br>
+            <input type="text" placeholder="CIDADE" name="cidade">
+            <br><br>
+            <label>UF</label>
+             <select  name="estado">
+                <option value="SP">SP</option>
+                <option value="RJ">RJ</option>
+                <option value="MG">MG</option>
+                <option value="SC">SC</option>
+                <option value="BA">BA</option>
+                <option value="AM">AM</option>
+            </select>
+            <br><br>
+            <label>VALIDADO?</label>
+             <select  name="flag_validado">
+                <option value="N" selected>Não</option>
+                <option value="S">Sim</option>
+            </select>
+            <br><br>
+            <label>ATIVO?</label>
+             <select  name="flag_ativo">
+                <option value="N">Não</option>
+                <option value="S" selected>Sim</option>
+            </select>
+            <br><br>
+            <input type="text" placeholder="OBSERVAÇÕES" name="obs">
+            <br><br>
+            <input type="submit" value="Enviar" class="btn btn-primary sm" method="POST" onclick="confirmarAtualizacao()">         
+        </form>
+    </div>
+    <script>
+        function confirmarAtualizacao() {
+            if (confirm('Tem certeza que deseja continuar?')) {
+                window.location.href = "{% url 'insere_novo_responsavel' %}";
+            }
+        }
+    </script>
+{% endblock %}

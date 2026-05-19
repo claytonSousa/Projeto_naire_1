@@ -1,0 +1,43 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    CADASTRO DE FAMÍLIA - NOVO FILHO
+{% endblock %}
+{% block container %}
+    <br><br>
+    <div>
+        <h3>NOVO FILHO</h3>
+
+        <form action="{% url 'insere_novo_filho' %}" method="POST" >
+            {% csrf_token %}
+            <input type="hidden" placeholder="{{ id_responsavel  }}" name="responsavel" value="{{id_responsavel }}">
+            <br><br>
+            <input type="text" placeholder="NOME" name="pnome">
+            <br><br>
+            <input type="text" placeholder="SOBRENOME" name="snome">
+            <br><br>
+            <input type="text" placeholder="DT NASCIMENTO" name="dt_nasc">
+            <br><br>
+            <input type="text" placeholder="CPF" name="cpf">
+            <br><br>
+            <label>SEXO?</label>
+             <select  name="sexo">
+                <option value="M">M</option>
+                <option value="F">F</option>
+            </select>
+            <br><br>
+            <input type="text" placeholder="NÚM. ROUPA" name="roupa">
+            <br><br>
+            <input type="text" placeholder="NÚM. SAPATO" name="sapato">
+            <br><br>
+            <label>CAD. OUTRA ONG?</label>
+             <select  name="outra_ong">
+                <option value="N">Não</option>
+                <option value="S">Sim</option>
+            </select>
+            <br><br>
+            
+            <input type="submit" value="Enviar" class="btn btn-primary sm">         
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    LISTA FUNCIONÁRIOS
+{% endblock %}
+
+{% block container %}
+    {% csrf_token %}
+    <label>LISTA DA FILHOS</label>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">ID RESP</th>
+                <th scope="col">NOME</th>
+                <th scope="col">DT NASC</th>
+                <th scope="col">CPF</th>
+                <th scope="col">SEXO</th>
+                <th scope="col">ROUPA</th>
+                <th scope="col">SAPATO</th>
+                <th scope="col">OUT. ONG</th>
+                <th scope="col">DT CADASTRO</th> 
+                <th scope="col">AÇÃO</th> 
+            </tr>
+        </thead>
+        
+        <tbody>
+            {% for filho in lista %}
+            <tr>
+                <td>{{ filho.id_filho }}</td>
+                <td>{{ id_responsavel }}</td>
+                <td>{{ filho.pnome }} {{ filho.snome }}</td>
+                <td>{{ filho.data }}</td>
+                <td>{{ filho.cpf }}</td>
+                <td>{{ filho.sexo }}</td>
+                <td>{{ filho.numero_roupa }}</td>
+                <td>{{ filho.numero_sapato }}</td>
+                <td>{{ filho.cadastro_outra_ong }}</td>
+                <td>{{ filho.data_cadastro }}</td>
+                <td>
+                    <a href="{% url 'desativar_filho' id_filho=filho.id_filho %}" class="btn btn-primary btn-sm">
+                        DESATIVAR
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="11">Nenhum registro encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a href="{% url 'novo_filho' id_responsavel=id_responsavel %}" class="btn btn-primary btn-sm" method="POST">
+        INSERIR CRIANÇA
+    </a>
+{% endblock %}

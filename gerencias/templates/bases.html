@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block page_title %}{% endblock%}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="http://localhost:8000/">HOME</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                FUNCIONÁRIOS
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios/">LISTA FUNCIONÁRIOS</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_funcionario/">NOVO FUNCIONÁRIO</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios_desativados/">FUNCIONÁRIOS DESATIVADOS</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                RESPONSÁVEL
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_responsavel/">CADASTRAR RESPONSÁVEL</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel/">RESPONSÁVEIS VALIDADOS</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_nval/">RESPONSÁVEIS NÃO VALIDADOS</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_des/">RESPONSÁVEIS DESATIVADOS</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">BUSCAR RESPONSÁVEL NOME</a></li>                          
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                FILHOS
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_filhos_total/">LISTA TOTAL DE CRIANÇAS</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a href="{% url 'buscar_filhos' %}" class="nav-link">
+                                        <i class="fas fa-search"></i> BUSCAR CRIANÇAS
+                                    </a>
+                                </li>                       
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="http://localhost:8000/cadastros/lista_madrinhas_padrinhos/">MADRINHAS E PADRINHOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">EVENTOS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">DOAÇÕES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">ENTREGAS</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="http://localhost:8000/cadastros/lista_oficios/">OFÍCIOS</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary sm">
+                                    Sair
+                                </button>
+                            </form>
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="{% url 'signup' %}" class="nav-link active" aria-disabled="true">Cadastrar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'login' %}" class="nav-link active" aria-disabled="true" >Entrar</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <main class="container">
+        {% block container %}{% endblock%}
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    </body>
+</html>

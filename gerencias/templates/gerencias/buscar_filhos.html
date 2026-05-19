@@ -1,0 +1,121 @@
+{% extends 'bases.html' %}
+
+{% block page_title %}
+    BUSCAR CRIANÇAS
+{% endblock %}
+
+{% block container %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>BUSCAR CRIANÇAS</h4>
+        </div>
+        <div class="card-body">
+            
+            <!-- Formulário de Busca -->
+            <form method="POST" action="{% url 'buscar_filhos' %}" class="mb-4">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="tipo_busca">Buscar por:</label>
+                            <select name="tipo_busca" id="tipo_busca" class="form-control">
+                                <option value="nome" {% if tipo_busca == 'nome' %}selected{% endif %}>Nome</option>
+                                <option value="idade" {% if tipo_busca == 'idade' %}selected{% endif %}>Idade</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="termo_busca">
+                                <span id="label_busca">Digite o nome:</span>
+                            </label>
+                            <input type="text" 
+                                   name="termo_busca" 
+                                   id="termo_busca" 
+                                   class="form-control" 
+                                   value="{{ termo_busca }}"
+                                   placeholder="{% if tipo_busca == 'nome' %}Ex: João ou Silva{% else %}Ex: 5{% endif %}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-primary btn-block" method="POST">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Resultados -->
+            {% if termo_busca %}
+                <hr>
+                <h5>Resultados encontrados: {{ total_resultados }}</h5>
+                
+                {% if resultados %}
+                    <div class="table-responsive mt-3">
+                        <table class="table table-striped table-hover">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome Completo</th>
+                                    <th>Idade</th>
+                                    <th>Data Nasc.</th>
+                                    <th>CPF</th>
+                                    <th>Sexo</th>
+                                    <th>Responsável</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for filho in resultados %}
+                                <tr>
+                                    <td>{{ filho.id_filho }}</td>
+                                    <td>{{ filho.pnome }} {{ filho.snome }}</td>
+                                    <td>
+                                        {% if filho.idade %}
+                                            {{ filho.idade }} anos
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ filho.data_nascimento|default:"-" }}</td>
+                                    <td>{{ filho.cpf|default:"-" }}</td>
+                                    <td>{{ filho.get_sexo_display|default:filho.sexo }}</td>
+                                    <td>{{ filho.id_responsavel.pnome|default:filho.id_responsavel }} {{ filho.id_responsavel.snome|default:"" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-info-circle"></i> Nenhuma criança encontrada com o termo "{{ termo_busca }}".
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript para mudar o placeholder e label conforme o tipo de busca
+    document.getElementById('tipo_busca').addEventListener('change', function() {
+        var tipo = this.value;
+        var label = document.getElementById('label_busca');
+        var input = document.getElementById('termo_busca');
+        
+        if (tipo === 'nome') {
+            label.innerHTML = 'Digite o nome:';
+            input.placeholder = 'Ex: João ou Silva';
+        } else {
+            label.innerHTML = 'Digite a idade:';
+            input.placeholder = 'Ex: 5 (anos)';
+        }
+    });
+</script>
+
+{% endblock %}

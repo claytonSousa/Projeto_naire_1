@@ -1,0 +1,76 @@
+{% extends 'bases.html' %}
+
+{% block page_title %}
+    EDITA FUNCIONÁRIO
+{% endblock %}
+
+{% block container %}
+    {% for item in dados %}
+        <form action="{% url 'atualiza_funcionario' %}" method="POST">
+            {% csrf_token %}
+            
+            <input type="hidden" name="id_funcionario" value="{{ item.id_funcionario }}">
+            
+            <label>TIPO FUNCIONARIO</label>
+            <select name="id_tipo">
+                <option value="1" {% if item.id_tipo == 1 or item.id_tipo == '1' %}selected{% endif %}>ADMIN</option>
+                <option value="2" {% if item.id_tipo == 2 or item.id_tipo == '2' %}selected{% endif %}>MEMBRO</option>
+                <option value="3" {% if item.id_tipo == 3 or item.id_tipo == '3' %}selected{% endif %}>CONTRATADO</option>
+                <option value="4" {% if item.id_tipo == 4 or item.id_tipo == '4' %}selected{% endif %}>VOLUNTÁRIO</option>
+            </select>
+            <br><br>
+            
+            <label>Primeiro Nome</label>
+            <input type="text" name="pnome" value="{{ item.pnome }}">
+            <br><br>
+            
+            <label>Sobrenome</label>
+            <input type="text" name="snome" value="{{ item.snome }}">
+            <br><br>
+            
+            <label>CPF</label>
+            <input type="text" name="cpf" value="{{ item.cpf }}">
+            <br><br>
+            
+            <label>Telefone</label>
+            <input type="text" name="telefone" value="{{ item.telefone }}">
+            <br><br>
+            
+            <label>Endereço</label>
+            <input type="text" name="endereco" value="{{ item.endereco }}">
+            <br><br>
+            
+            <label>Complemento</label>
+            <input type="text" name="complemento" value="{{ item.complemento|default:'' }}">
+            <br><br>
+            
+            <label>Bairro</label>
+            <input type="text" name="bairro" value="{{ item.bairro }}">
+            <br><br>
+            
+            <label>Cidade</label>
+            <input type="text" name="cidade" value="{{ item.cidade }}">
+            <br><br>
+            
+            <label>UF</label>
+            <select name="estado">
+                <option value="SP" {% if item.estado == 'SP' %}selected{% endif %}>SP</option>
+                <option value="RJ" {% if item.estado == 'RJ' %}selected{% endif %}>RJ</option>
+                <option value="MG" {% if item.estado == 'MG' %}selected{% endif %}>MG</option>
+                <option value="SC" {% if item.estado == 'SC' %}selected{% endif %}>SC</option>
+                <option value="BA" {% if item.estado == 'BA' %}selected{% endif %}>BA</option>
+                <option value="AM" {% if item.estado == 'AM' %}selected{% endif %}>AM</option>
+            </select>
+            <br><br>
+            
+            <label>ATIVO</label>
+            <select name="flag_ativo">
+                <option value="S" {% if item.flag_ativo == 'S' %}selected{% endif %}>Sim</option>
+                <option value="N" {% if item.flag_ativo == 'N' %}selected{% endif %}>Não</option>
+            </select>
+            <br><br>
+            
+            <input type="submit" value="Atualizar" class="btn btn-primary btn-sm">
+        </form>
+    {% endfor %}
+{% endblock %}
