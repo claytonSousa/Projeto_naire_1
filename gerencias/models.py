@@ -149,3 +149,44 @@ class TbFilhosResponsavel(models.Model):
     class Meta:
         managed = False
         db_table = 'tb_filhos_responsavel'
+
+class TbOficios(models.Model):
+    id_oficio = models.AutoField(primary_key=True)
+    data_criacao = models.DateTimeField(blank=True, null=True)
+    id_usuario = models.ForeignKey(AuthUser, models.DO_NOTHING, db_column='id_usuario')
+    destinatario = models.CharField(max_length=255, blank=True, null=True)
+    mensagem = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tb_oficios'
+
+class TbMadrinhaPadrinho(models.Model):
+    id_mad_pad = models.AutoField(primary_key=True)
+    id_usuario_cad = models.ForeignKey(AuthUser, models.DO_NOTHING, db_column='id_usuario_cad', blank=True, null=True)
+    cpf = models.CharField(unique=True, max_length=11, blank=True, null=True)
+    flag_anonimo = models.CharField(max_length=1, blank=True, null=True)
+    pnome = models.CharField(max_length=100, blank=True, null=True)
+    snome = models.CharField(max_length=255, blank=True, null=True)
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    complemento = models.CharField(max_length=255, blank=True, null=True)
+    bairro = models.CharField(max_length=255, blank=True, null=True)
+    cidade = models.CharField(max_length=255, blank=True, null=True)
+    estado = models.CharField(max_length=255, blank=True, null=True)
+    data_cadastro = models.DateTimeField(blank=True, null=True)
+    atualizacao_cad = models.DateTimeField(blank=True, null=True)
+    flag_ativo = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tb_madrinha_padrinho'
+
+class TbApadrinhamentoCrianca(models.Model):
+    id_apadrinhamento = models.IntegerField(primary_key=True)
+    id_mad_pad = models.ForeignKey('TbMadrinhaPadrinho', models.DO_NOTHING, db_column='id_mad_pad')
+    id_filho = models.ForeignKey('TbFilhosResponsavel', models.DO_NOTHING, db_column='id_filho')
+    data_cadastro = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tb_apadrinhamento_crianca'

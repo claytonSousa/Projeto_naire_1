@@ -1,0 +1,53 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    CADASTRO DE MADRINHAS E OU PADRINHOS
+{% endblock %}
+{% block container %}
+    <br><br>
+    <div>
+        <h3>NOVA(O) MADRINHA OU PADRINHO</h3>
+        
+        <form action="{% url 'inserir_madrinha_padrinho' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="id_usuario_cad" value="{{ id_usuario_cad }}">
+            <br><br>
+            <input type="text" placeholder="CPF" name="cpf">
+            <br><br>
+            <label>ANONIMATO?</label>
+            <select  name="anonimo">
+                <option value="S">Sim</option>
+                <option value="N" select>Não</option>
+            </select>
+            <br><br>
+            <input type="text" placeholder="NOME" name="pnome">
+            <br><br>
+            <input type="text" placeholder="SOBRENOME" name="snome">
+            <br><br>
+            <input type="text" placeholder="RUA, NÚMERO" name="endereco">
+            <br><br>
+            <input type="text" placeholder="COMPLEMENTO" name="complemento">
+            <br><br>
+            <input type="text" placeholder="BAIRRO" name="bairro">
+            <br><br>
+            <input type="text" placeholder="CIDADE" name="cidade">
+            <br><br>
+            <label>UF</label>
+            <select  name="estado">
+                <option value="SP">SP</option>
+                <option value="RJ">RJ</option>
+                <option value="MG">MG</option>
+                <option value="SC">SC</option>
+                <option value="BA">BA</option>
+                <option value="AM">AM</option>
+            </select>
+            <br><br>
+            <label>ATIVO?</label>
+            <select  name="flag_ativo">
+                <option value="S">Sim</option>
+                <option value="N" select>Não</option>
+            </select>
+            <button type="submit">Salvar</button>
+        </form>
+    </div>
+{% endblock %}

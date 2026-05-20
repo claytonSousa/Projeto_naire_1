@@ -20,11 +20,12 @@
                                 FUNCIONÁRIOS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios/">LISTA FUNCIONÁRIOS</a></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios/">LISTA</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_funcionario/">NOVO FUNCIONÁRIO</a></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_funcionario/">NOVO</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios_desativados/">FUNCIONÁRIOS DESATIVADOS</a></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios_desativados/">DESATIVADOS</a></li>
+                                <li><hr class="dropdown-divider"></li>
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
@@ -32,44 +33,75 @@
                                 RESPONSÁVEL
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_responsavel/">CADASTRAR RESPONSÁVEL</a></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_responsavel/">CADASTRAR</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel/">RESPONSÁVEIS VALIDADOS</a></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel/">LISTAR VALIDADOS</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_nval/">RESPONSÁVEIS NÃO VALIDADOS</a></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_nval/">LISTAR NÃO VALIDADOS</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_des/">RESPONSÁVEIS DESATIVADOS</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">BUSCAR RESPONSÁVEL NOME</a></li>                          
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_des/">LISTAR DESATIVADOS</a></li>
+                                <li><hr class="dropdown-divider"></li>                        
                             </ul>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                FILHOS
+                                CRIANÇAS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_filhos_total/">LISTA TOTAL DE CRIANÇAS</a></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_filhos_total/">LISTAR TOTAL</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a href="{% url 'buscar_filhos' %}" class="nav-link">
-                                        <i class="fas fa-search"></i> BUSCAR CRIANÇAS
+                                        <i class="fas fa-search"></i> BUSCAR
                                     </a>
-                                </li>                       
+                                </li>
+                                <li><hr class="dropdown-divider"></li>                      
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="http://localhost:8000/cadastros/lista_madrinhas_padrinhos/">MADRINHAS E PADRINHOS</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                MADRINHAS
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_madrinha_padrinho/">LISTAR</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_madrinha_padrinho/">NOVO(A)</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_apadrinhamento/">APADRINHAMENTOS</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">EVENTOS</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                EVENTOS
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_eventos/">LISTAR</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_evento/">NOVO</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">DOAÇÕES</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                ENTREGAS
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_entregas/">LISTAR</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/nova_entrega/">NOVA</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">ENTREGAS</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="http://localhost:8000/cadastros/lista_oficios/">OFÍCIOS</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                OFÍCIOS
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_oficio/">NOVO OFICIO</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_oficio/">LISTA OFÍCIOS</a></li>
+                                <li><hr class="dropdown-divider"></li>                        
+                            </ul>
                         </li>
                         {% if user.is_authenticated %}
                             <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">

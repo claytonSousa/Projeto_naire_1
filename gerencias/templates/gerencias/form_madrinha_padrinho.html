@@ -1,0 +1,122 @@
+{% extends 'bases.html' %}
+{% block content %}
+
+<div class="container">
+    <h2>{{ titulo|default:"Novo Cadastro - Madrinha/Padrinho" }}</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Primeiro Nome *</label>
+                    <input type="text" name="pnome" class="form-control" 
+                           value="{{ registro.pnome|default:'' }}" required>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Sobrenome</label>
+                    <input type="text" name="snome" class="form-control" 
+                           value="{{ registro.snome|default:'' }}">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="flag_anonimo" value="S" 
+                       {% if registro.flag_anonimo == 'S' %}checked{% endif %}>
+                Deseja ser anônimo?
+            </label>
+        </div>
+        
+        <div class="form-group" id="campo_cpf">
+            <label>CPF</label>
+            <input type="text" name="cpf" class="form-control" 
+                   value="{{ registro.cpf|default:'' }}" placeholder="000.000.000-00">
+            <small class="text-muted">Obrigatório apenas se não for anônimo</small>
+        </div>
+        
+        <div class="form-group">
+            <label>Endereço</label>
+            <input type="text" name="endereco" class="form-control" 
+                   value="{{ registro.endereco|default:'' }}">
+        </div>
+        
+        <div class="form-group">
+            <label>Complemento</label>
+            <input type="text" name="complemento" class="form-control" 
+                   value="{{ registro.complemento|default:'' }}">
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Bairro</label>
+                    <input type="text" name="bairro" class="form-control" 
+                           value="{{ registro.bairro|default:'' }}">
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Cidade</label>
+                    <input type="text" name="cidade" class="form-control" 
+                           value="{{ registro.cidade|default:'' }}">
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select name="estado" class="form-control">
+                        <option value="">Selecione</option>
+                        <option value="SP" {% if registro.estado == 'SP' %}selected{% endif %}>SP</option>
+                        <option value="RJ" {% if registro.estado == 'RJ' %}selected{% endif %}>RJ</option>
+                        <!-- Adicione outros estados -->
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'lista_madrinha_padrinho' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+<script>
+    // Máscara CPF
+    document.querySelector('input[name="cpf"]').addEventListener('input', function(e) {
+        let v = this.value.replace(/\D/g, '');
+            if (v.length <= 3) {
+                this.value = v;
+            } else if (v.length <= 6) {
+                this.value = v.substring(0,3) + '.' + v.substring(3);
+            } else if (v.length <= 9) {
+                this.value = v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6);
+            } else {
+                this.value = v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6,9) + '-' + v.substring(9,11);
+            }
+    });
+    
+    // Mostra/esconde campo CPF baseado no anônimo
+    document.querySelector('input[name="flag_anonimo"]').addEventListener('change', function(e) {
+        let cpfField = document.getElementById('campo_cpf');
+            if (this.checked) {
+                cpfField.style.display = 'none';
+                document.querySelector('input[name="cpf"]').value = '';
+            } else {
+                cpfField.style.display = 'block';
+            }
+    });
+    
+    // Dispara evento inicial
+    if (document.querySelector('input[name="flag_anonimo"]').checked) {
+        document.getElementById('campo_cpf').style.display = 'none';
+    }
+</script>
+
+{% endblock %}

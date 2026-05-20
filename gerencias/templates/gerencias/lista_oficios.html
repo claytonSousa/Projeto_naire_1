@@ -1,0 +1,36 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    LISTA OFICIOS
+{% endblock %}
+{% block container %}
+    {% csrf_token %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">CRIADO EM</th>
+                <th scope="col">CRIADOR</th>
+                <th scope="col">DESTINATARIO</th>
+                <th scope="col">MENSAGEM</th>  
+            </tr>
+        </thead>
+        <tbody>
+            {% for oficio in lista %}
+                <tr>
+                    <td>{{ oficio.id_oficio }}</td>
+                    <td>{{ oficio.data_criacao|date:"d/m/Y H:i" }}</td>
+                    <td>{{ oficio.id_usuario.username }}</td>
+                    <td>{{ oficio.destinatario }}</td>
+                    <td>{{ oficio.mensagem|truncatechars:100 }}</td>
+                </tr>
+            
+        </tbody>
+        {% empty %}
+        <tr>
+            <td colspan="7">Nenhum registro encontrado.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

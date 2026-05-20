@@ -1,0 +1,42 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    LISTA MADRINHAS E PADRINHOS
+{% endblock %}
+{% block container %}
+    {% csrf_token %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>CPF</th>
+                <th>Nome</th>
+                <th>Cidade/UF</th>
+                <th>Ativo</th>
+                <th>Data Cadastro</th>
+                <th>APADRINHAR</th>
+                <th>EDITAR</th>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in dados %}
+            <tr>
+                <td>{{ item.id_mad_pad }}</td>
+                <td>{{ item.cpf|default:"—" }}</td>
+                <td>{{ item.pnome }} {{ item.snome }}</td>
+                <td>{{ item.cidade|default:"—" }}/{{ item.estado|default:"—" }}</td>
+                <td>{{ item.flag_ativo }}</td>
+                <td>{{ item.data_cadastro|date:"d/m/Y H:i"|default:"—" }}</td> 
+                <td><a href="{% url 'apadrinhar_crianca' item.id_mad_pad %}" class="btn btn-success btn-sm">APADRINHAR</a></td>
+                <td><a href="{% url 'editar_madrinha_padrinho' item.id_mad_pad %}" class="btn btn-primary btn-sm">EDITAR</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">Nenhum registro encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

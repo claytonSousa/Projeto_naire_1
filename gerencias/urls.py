@@ -36,5 +36,21 @@ urlpatterns = [
     path('gerencias/buscar_filhos/', views.buscar_filhos, name='buscar_filhos'),
 
 
-    
+    path('gerencias/novo_oficio/', views.novo_oficio, name='novo_oficio'),
+    path('gerencias/lista_oficio/', views.lista_oficio, name='lista_oficio'),
+    path('gerencias/insere_novo_oficio/', views.insere_novo_oficio, name='insere_novo_oficio'),
+    path('gerencias/exclui_oficio/<int:id_oficio>', views.exclui_oficio, name='exclui_oficio'),
+
+
+    path('gerencias/novo_madrinha_padrinho/', views.novo_madrinha_padrinho, name='novo_madrinha_padrinho'),
+    path('gerencias/inserir_madrinha_padrinho/', views.inserir_madrinha_padrinho, name='inserir_madrinha_padrinho'),
+    path('gerencias/lista_madrinha_padrinho/', views.lista_madrinha_padrinho, name='lista_madrinha_padrinho'),
+    path('gerencias/editar_madrinha_padrinho/<int:id_mad_pad>/', views.editar_madrinha_padrinho, name='editar_madrinha_padrinho'),
+    path('gerencias/apadrinhar_crianca/<int:id_mad_pad>/', views.apadrinhar_crianca, name='apadrinhar_crianca'),
+    path('gerencias/vincular_mad_pad_crianca/', views.vincular_mad_pad_crianca, name='vincular_mad_pad_crianca'),
+    path('gerencias/reativar_madrinha_padrinho/<int:id_mad_pad>/', views.reativar_madrinha_padrinho, name='reativar_madrinha_padrinho'),
+    path('gerencias/lista_apadrinhamento/', views.lista_apadrinhamento, name='lista_apadrinhamento'),
+
+
+
 ]

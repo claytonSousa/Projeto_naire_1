@@ -16,7 +16,7 @@
             <br><br>
             <input type="text" placeholder="SOBRENOME" name="snome">
             <br><br>
-            <input type="text" placeholder="DT NASCIMENTO" name="dt_nasc">
+            <input type="text" id="dt_nasc" placeholder="dd/mm/aaaa" name="dt_nasc">
             <br><br>
             <input type="text" placeholder="CPF" name="cpf">
             <br><br>
@@ -40,4 +40,16 @@
             <input type="submit" value="Enviar" class="btn btn-primary sm">         
         </form>
     </div>
+    <script>
+        document.getElementById('dt_nasc').addEventListener('input', function(e) {
+            let v = this.value.replace(/\D/g, '');
+            if (v.length >= 5) {
+                this.value = v.substring(0,2) + '/' + v.substring(2,4) + '/' + v.substring(4,8);
+            } else if (v.length >= 3) {
+                this.value = v.substring(0,2) + '/' + v.substring(2);
+            } else {
+                this.value = v;
+            }
+        });
+    </script>
 {% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    LISTA APADRINHAMENTOS
+{% endblock %}
+{% block container %}
+    {% csrf_token %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">ID MADRINHA/PADRINHO</th>
+                <th scope="col">ID CRIANÇA</th>
+                <th scope="col">DATA CADASTRO</th>
+                <th scope="col">ATIVO</th>  
+            </tr>
+        </thead>
+        <tbody>
+            {% for apad in registros %}  <!-- Note: registros, não lista -->
+            <tr>
+                <td>{{ apad.id_apadrinhamento }}</td>
+                <td>{{ apad.id_mad_pad }}</td>
+                <td>{{ apad.id_filho }}</td>
+                <td>{{ apad.data_cadastro|date:"d/m/Y H:i" }}</td>
+                <td>{{ apad.flag_ativo }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Nenhum registro encontrado.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

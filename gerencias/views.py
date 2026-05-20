@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.utils import timezone
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
@@ -8,7 +10,8 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from gerencias.forms import AccountSignupForm
-from gerencias.models import Conn, TbFuncionario,TbTipoFuncionario,TbCadastroResponsavel,TbFilhosResponsavel
+from gerencias.models import Conn, TbFuncionario,TbTipoFuncionario,TbCadastroResponsavel,TbFilhosResponsavel,TbOficios
+from gerencias.models import TbMadrinhaPadrinho,TbApadrinhamentoCrianca
 import json
 from datetime import datetime, date
 
@@ -31,6 +34,14 @@ class userCreateView(CreateView):
         form.save()
         messages.success(self.request, self.success_message)
         return super(userCreateView, self).form_valid(form)
+
+class Apad:
+    def __init__(self, id_apad="", madrinha="", crianca="",data_cadastro="", flag_ativo=""):
+        self.id_apad = id_apad
+        self.madrinha = madrinha
+        self.crianca = crianca
+        self.data_cadastro = data_cadastro
+        self.flag_ativo = flag_ativo
 
 #Home page
 def home(request):
@@ -400,3 +411,202 @@ def calcular_idade(data_nascimento_str):
         return idade
     except:
         return None
+
+#Bloco Oficio
+@login_required
+def insere_novo_oficio(request):
+    criador = request.POST.get('responsavel')
+    remetente = request.POST.get('remetente')
+    destinatario = request.POST.get('destinatario')
+    mensagem = request.POST.get('mensagem')
+    mensagem = f"Mensagem de { remetente } para { destinatario }: "+mensagem
+    sql1 = "INSERT INTO tb_oficios (id_usuario,destinatario,mensagem)"
+    sql2 = f"VALUES({ escapar(criador) }, {escapar(destinatario)}, {escapar(mensagem)})"
+    result = Conn.executa_insert(sql1+sql2)
+    if result :
+        lista = Conn.executa_query(
+        "SELECT * FROM tb_oficios ORDER BY id_oficio DESC LIMIT 1")
+      
+        return render(request,'gerencias/lista_oficios.html',{ 'lista': lista })
+    else :
+       return render(request,'gerencias/novo_oficio.html')
+    
+@login_required
+def novo_oficio(request):
+    contexto = {
+        'usuario': request.user,
+        'id_usuario_cad': request.user.id,
+        'username': request.user.username
+    }
+    return render(request, 'gerencias/novo_oficio.html', contexto)
+
+@login_required
+def lista_oficio(request):
+    lista = TbOficios.objects.select_related('id_usuario').all().order_by('-data_criacao')
+    primeiro_id = lista.first().id_oficio if lista.exists() else None
+    contexto = {
+        'id_oficio': primeiro_id,
+        'lista': lista,
+        'total': lista.count()
+    }
+    return render(request, 'gerencias/lista_oficios.html', contexto)
+
+@login_required
+def exclui_oficio(request,id_oficio):
+    registro = TbOficios.objects.filter(id_oficio=id_oficio)
+    registro.delete()
+    return render(request,'lista_oficio')
+
+
+#Bloco Madrinhas
+@login_required
+def novo_madrinha_padrinho(request):
+    contexto = {
+        'usuario': request.user,
+        'id_usuario_cad': request.POST.get('id_usuario_cad', request.user.id)
+    }
+    return render(request,'gerencias/novo_madrinha_padrinho.html', contexto)
+
+@login_required
+def inserir_madrinha_padrinho(request):
+    if request.method == 'POST':
+        id_usuario_cad = request.POST.get('id_usuario_cad')
+        cpf = request.POST.get('cpf').replace('.', '').replace('-', '')  # Remove máscara
+        flag_anonimo = request.POST.get('flag_anonimo')
+        pnome = request.POST.get('pnome')
+        snome = request.POST.get('snome')
+        endereco = request.POST.get('endereco')
+        complemento = request.POST.get('complemento')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+        flag_ativo = request.POST.get('flag_ativo')
+
+        sql1 = "INSERT INTO tb_madrinha_padrinho (id_usuario_cad, cpf, flag_anonimo, pnome, snome, endereco, complemento, bairro, cidade, estado, flag_ativo)"
+        sql2 = f"VALUES({ escapar(id_usuario_cad) }, {escapar(cpf)}, {escapar(flag_anonimo)}, {escapar(pnome)}, {escapar(snome)}, {escapar(endereco)}, {escapar(complemento)}, {escapar(bairro)}, {escapar(cidade)}, {escapar(estado)}, {escapar(flag_ativo)})"
+        result = Conn.executa_insert(sql1+sql2)
+        
+        if result:
+            return redirect('lista_madrinha_padrinho')
+    else:
+        return render(request, 'gerencias/form_madrinha_padrinho.html')
+        #return HttpResponse(request)
+
+
+@login_required
+def lista_madrinha_padrinho(request):
+    lista = Conn.executa_query(
+        "SELECT * FROM tb_madrinha_padrinho ORDER BY data_cadastro DESC") 
+    return render(request, 'gerencias/listar_madrinhas_padrinhos.html', { 'dados': lista })
+
+@login_required
+def editar_madrinha_padrinho(request, id_mad_pad):
+    registro = get_object_or_404(TbMadrinhaPadrinho, id_mad_pad=id_mad_pad)
+    
+    if request.method == 'POST':
+        try:
+            # Atualiza dados
+            registro.cpf = request.POST.get('cpf', '').replace('.', '').replace('-', '')
+            registro.flag_anonimo = request.POST.get('flag_anonimo', 'N')
+            registro.pnome = request.POST.get('pnome', '').strip()
+            registro.snome = request.POST.get('snome', '').strip()
+            registro.endereco = request.POST.get('endereco', '').strip()
+            registro.complemento = request.POST.get('complemento', '').strip()
+            registro.bairro = request.POST.get('bairro', '').strip()
+            registro.cidade = request.POST.get('cidade', '').strip()
+            registro.estado = request.POST.get('estado', '').strip()
+            
+            registro.save()
+            messages.success(request, 'Dados atualizados com sucesso!')
+            return redirect('lista_madrinha_padrinho')
+            
+        except Exception as e:
+            messages.error(request, f'Erro ao atualizar: {str(e)}')
+    
+    contexto = {
+        'registro': registro,
+        'titulo': 'Editar Cadastro'
+    }
+    return render(request, 'gerencias/form_madrinha_padrinho.html', contexto)
+
+
+@login_required
+def reativar_madrinha_padrinho(request, id_mad_pad):
+    registro = get_object_or_404(TbMadrinhaPadrinho, id_mad_pad=id_mad_pad)
+    registro.flag_ativo = 'S'
+    registro.atualizacao_cad = timezone.now()
+    registro.save()
+    messages.success(request, 'Registro reativado com sucesso!')
+    return redirect('lista_madrinha_padrinho')
+
+@login_required
+def api_salvar_madrinha_padrinho(request):
+    if request.method == 'POST':
+        try:
+            # Pega dados JSON
+            import json
+            dados = json.loads(request.body)
+            
+            cpf = dados.get('cpf', '').replace('.', '').replace('-', '')
+            
+            # Valida CPF duplicado
+            if TbMadrinhaPadrinho.objects.filter(cpf=cpf).exists():
+                return JsonResponse({'error': 'CPF já cadastrado'}, status=400)
+            
+            novo = TbMadrinhaPadrinho.objects.create(
+                id_usuario_cad=request.user,
+                cpf=cpf,
+                flag_anonimo=dados.get('flag_anonimo', 'N'),
+                pnome=dados.get('pnome'),
+                snome=dados.get('snome'),
+                endereco=dados.get('endereco'),
+                complemento=dados.get('complemento'),
+                bairro=dados.get('bairro'),
+                cidade=dados.get('cidade'),
+                estado=dados.get('estado'),
+                data_cadastro=timezone.now(),
+                flag_ativo='S'
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'id': novo.id_mad_pad,
+                'message': 'Cadastro realizado com sucesso'
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    
+    return JsonResponse({'error': 'Método não permitido'}, status=405)
+
+@login_required
+def apadrinhar_crianca(request, id_mad_pad):
+    registro = TbMadrinhaPadrinho.objects.filter(id_mad_pad=id_mad_pad).first()
+    criancas = TbFilhosResponsavel.objects.filter(flag_ativo='S').order_by('pnome')
+    contexto = {
+        'registro': registro,
+        'criancas': criancas,
+        'titulo': 'Apadrinhar Criança'
+    }
+    return render(request, 'gerencias/apadrinhar_crianca.html', contexto)
+
+@login_required
+def vincular_mad_pad_crianca(request):
+    id_mad_pad = request.GET.get('id_mad_pad')
+    id_filho = request.GET.get('id_filho')
+    sql1 = "INSERT INTO tb_apadrinhamento_crianca (id_mad_pad, id_filho)"
+    sql2 = f"VALUES({ escapar(id_mad_pad) }, {escapar(id_filho) })"
+    result = Conn.executa_insert(sql1+sql2)
+    madrinha = TbMadrinhaPadrinho.objects.filter(id_mad_pad=id_mad_pad).first()
+    criancas = TbFilhosResponsavel.objects.filter(id_filho=id_filho).first()
+    apadrinhamento = {
+        'registro': madrinha,
+        'criancas': criancas,
+        'titulo': 'Apadrinhar Criança'
+    }
+    return render(request, 'gerencias/lista_apadrinhamentos.html', apadrinhamento)
+
+@login_required
+def lista_apadrinhamento(request):
+    registros = TbApadrinhamentoCrianca.objects.all().order_by('-data_cadastro')
+    return render(request, 'gerencias/lista_apadrinhamentos.html', {'registros': registros})
