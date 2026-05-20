@@ -9,7 +9,7 @@
         <h3>CRIAR OFICÍO</h3>
         <form action="{% url 'insere_novo_oficio' %}" method="POST" >
             {% csrf_token %}
-            <input type="hidden" placeholder="{{ id_usuario }}" name="responsavel" value="{{ id_usuario }}">
+            <input type="hidden" placeholder="{{ id_usuario }}" name="responsavel" value="{{ id_usuario_cad }}">
             <br>
             <input type="text" placeholder="REMENTENTE" name="remetente">
             <br><br>
