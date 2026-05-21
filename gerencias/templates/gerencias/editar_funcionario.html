@@ -1,76 +1,568 @@
 {% extends 'bases.html' %}
+{% load static %}
 
 {% block page_title %}
-    EDITA FUNCIONÁRIO
+    Editar Funcionário | NAIRE
 {% endblock %}
 
 {% block container %}
-    {% for item in dados %}
-        <form action="{% url 'atualiza_funcionario' %}" method="POST">
-            {% csrf_token %}
-            
-            <input type="hidden" name="id_funcionario" value="{{ item.id_funcionario }}">
-            
-            <label>TIPO FUNCIONARIO</label>
-            <select name="id_tipo">
-                <option value="1" {% if item.id_tipo == 1 or item.id_tipo == '1' %}selected{% endif %}>ADMIN</option>
-                <option value="2" {% if item.id_tipo == 2 or item.id_tipo == '2' %}selected{% endif %}>MEMBRO</option>
-                <option value="3" {% if item.id_tipo == 3 or item.id_tipo == '3' %}selected{% endif %}>CONTRATADO</option>
-                <option value="4" {% if item.id_tipo == 4 or item.id_tipo == '4' %}selected{% endif %}>VOLUNTÁRIO</option>
-            </select>
-            <br><br>
-            
-            <label>Primeiro Nome</label>
-            <input type="text" name="pnome" value="{{ item.pnome }}">
-            <br><br>
-            
-            <label>Sobrenome</label>
-            <input type="text" name="snome" value="{{ item.snome }}">
-            <br><br>
-            
-            <label>CPF</label>
-            <input type="text" name="cpf" value="{{ item.cpf }}">
-            <br><br>
-            
-            <label>Telefone</label>
-            <input type="text" name="telefone" value="{{ item.telefone }}">
-            <br><br>
-            
-            <label>Endereço</label>
-            <input type="text" name="endereco" value="{{ item.endereco }}">
-            <br><br>
-            
-            <label>Complemento</label>
-            <input type="text" name="complemento" value="{{ item.complemento|default:'' }}">
-            <br><br>
-            
-            <label>Bairro</label>
-            <input type="text" name="bairro" value="{{ item.bairro }}">
-            <br><br>
-            
-            <label>Cidade</label>
-            <input type="text" name="cidade" value="{{ item.cidade }}">
-            <br><br>
-            
-            <label>UF</label>
-            <select name="estado">
-                <option value="SP" {% if item.estado == 'SP' %}selected{% endif %}>SP</option>
-                <option value="RJ" {% if item.estado == 'RJ' %}selected{% endif %}>RJ</option>
-                <option value="MG" {% if item.estado == 'MG' %}selected{% endif %}>MG</option>
-                <option value="SC" {% if item.estado == 'SC' %}selected{% endif %}>SC</option>
-                <option value="BA" {% if item.estado == 'BA' %}selected{% endif %}>BA</option>
-                <option value="AM" {% if item.estado == 'AM' %}selected{% endif %}>AM</option>
-            </select>
-            <br><br>
-            
-            <label>ATIVO</label>
-            <select name="flag_ativo">
-                <option value="S" {% if item.flag_ativo == 'S' %}selected{% endif %}>Sim</option>
-                <option value="N" {% if item.flag_ativo == 'N' %}selected{% endif %}>Não</option>
-            </select>
-            <br><br>
-            
-            <input type="submit" value="Atualizar" class="btn btn-primary btn-sm">
-        </form>
-    {% endfor %}
+<div class="edit-funcionario-container">
+    <div class="container py-4">
+        <!-- Header da página -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'lista_funcionarios' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="bi bi-pencil-square text-primary"></i> 
+                            Editar Funcionário
+                        </h1>
+                        <p class="text-muted lead mb-0">
+                            Atualize as informações do colaborador
+                        </p>
+                    </div>
+                </div>
+                <hr class="my-3">
+            </div>
+        </div>
+
+        {% for item in dados %}
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Formulário principal -->
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                        <h4 class="mb-0">
+                            <i class="bi bi-person-badge text-primary"></i> 
+                            Dados Pessoais
+                        </h4>
+                        <p class="text-muted small mt-1">Preencha todas as informações abaixo</p>
+                    </div>
+                    
+                    <div class="card-body">
+                        <form action="{% url 'atualiza_funcionario' %}" method="POST" enctype="multipart/form-data" id="editForm">
+                            {% csrf_token %}
+                            
+                            <input type="hidden" name="id_funcionario" value="{{ item.id_funcionario }}">
+                            
+                            <!-- Dados do Funcionário -->
+                            <div class="row g-4">
+                                <!-- Tipo Funcionário -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-person-vcard"></i> Tipo de Funcionário
+                                    </label>
+                                    <select name="id_tipo" class="form-select shadow-sm">
+                                        <option value="1" {% if item.id_tipo == 1 or item.id_tipo == '1' %}selected{% endif %}>
+                                            👑 ADMIN
+                                        </option>
+                                        <option value="2" {% if item.id_tipo == 2 or item.id_tipo == '2' %}selected{% endif %}>
+                                            👥 MEMBRO
+                                        </option>
+                                        <option value="3" {% if item.id_tipo == 3 or item.id_tipo == '3' %}selected{% endif %}>
+                                            💼 CONTRATADO
+                                        </option>
+                                        <option value="4" {% if item.id_tipo == 4 or item.id_tipo == '4' %}selected{% endif %}>
+                                            🤝 VOLUNTÁRIO
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Status Ativo -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-toggle-on"></i> Status
+                                    </label>
+                                    <select name="flag_ativo" class="form-select shadow-sm">
+                                        <option value="S" {% if item.flag_ativo == 'S' %}selected{% endif %}>
+                                            ✅ Ativo
+                                        </option>
+                                        <option value="N" {% if item.flag_ativo == 'N' %}selected{% endif %}>
+                                            ⛔ Inativo
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Primeiro Nome -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-person-fill"></i> Primeiro Nome
+                                    </label>
+                                    <input type="text" name="pnome" value="{{ item.pnome }}" 
+                                           class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- Sobrenome -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-person-fill"></i> Sobrenome
+                                    </label>
+                                    <input type="text" name="snome" value="{{ item.snome }}" 
+                                           class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- CPF -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-credit-card"></i> CPF
+                                    </label>
+                                    <input type="text" name="cpf" value="{{ item.cpf }}" 
+                                           class="form-control shadow-sm cpf-mask" required>
+                                </div>
+
+                                <!-- Telefone -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-telephone-fill"></i> Telefone
+                                    </label>
+                                    <input type="text" name="telefone" value="{{ item.telefone }}" 
+                                           class="form-control shadow-sm phone-mask" required>
+                                </div>
+
+                                <!-- Endereço -->
+                                <div class="col-md-8">
+                                    <label class="form-label fw-bold">
+                                        <i class="bi bi-geo-alt-fill"></i> Endereço
+                                    </label>
+                                    <input type="text" name="endereco" value="{{ item.endereco }}" 
+                                           class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- Número (adicional) -->
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Número</label>
+                                    <input type="text" name="numero" value="{{ item.numero|default:'' }}" 
+                                           class="form-control shadow-sm" placeholder="Nº">
+                                </div>
+
+                                <!-- Complemento -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Complemento</label>
+                                    <input type="text" name="complemento" value="{{ item.complemento|default:'' }}" 
+                                           class="form-control shadow-sm" placeholder="Apto, Bloco, etc">
+                                </div>
+
+                                <!-- Bairro -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Bairro</label>
+                                    <input type="text" name="bairro" value="{{ item.bairro }}" 
+                                           class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- Cidade -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Cidade</label>
+                                    <input type="text" name="cidade" value="{{ item.cidade }}" 
+                                           class="form-control shadow-sm" required>
+                                </div>
+
+                                <!-- UF -->
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">UF</label>
+                                    <select name="estado" class="form-select shadow-sm" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="AC" {% if item.estado == 'AC' %}selected{% endif %}>Acre</option>
+                                        <option value="AL" {% if item.estado == 'AL' %}selected{% endif %}>Alagoas</option>
+                                        <option value="AP" {% if item.estado == 'AP' %}selected{% endif %}>Amapá</option>
+                                        <option value="AM" {% if item.estado == 'AM' %}selected{% endif %}>Amazonas</option>
+                                        <option value="BA" {% if item.estado == 'BA' %}selected{% endif %}>Bahia</option>
+                                        <option value="CE" {% if item.estado == 'CE' %}selected{% endif %}>Ceará</option>
+                                        <option value="DF" {% if item.estado == 'DF' %}selected{% endif %}>Distrito Federal</option>
+                                        <option value="ES" {% if item.estado == 'ES' %}selected{% endif %}>Espírito Santo</option>
+                                        <option value="GO" {% if item.estado == 'GO' %}selected{% endif %}>Goiás</option>
+                                        <option value="MA" {% if item.estado == 'MA' %}selected{% endif %}>Maranhão</option>
+                                        <option value="MT" {% if item.estado == 'MT' %}selected{% endif %}>Mato Grosso</option>
+                                        <option value="MS" {% if item.estado == 'MS' %}selected{% endif %}>Mato Grosso do Sul</option>
+                                        <option value="MG" {% if item.estado == 'MG' %}selected{% endif %}>Minas Gerais</option>
+                                        <option value="PA" {% if item.estado == 'PA' %}selected{% endif %}>Pará</option>
+                                        <option value="PB" {% if item.estado == 'PB' %}selected{% endif %}>Paraíba</option>
+                                        <option value="PR" {% if item.estado == 'PR' %}selected{% endif %}>Paraná</option>
+                                        <option value="PE" {% if item.estado == 'PE' %}selected{% endif %}>Pernambuco</option>
+                                        <option value="PI" {% if item.estado == 'PI' %}selected{% endif %}>Piauí</option>
+                                        <option value="RJ" {% if item.estado == 'RJ' %}selected{% endif %}>Rio de Janeiro</option>
+                                        <option value="RN" {% if item.estado == 'RN' %}selected{% endif %}>Rio Grande do Norte</option>
+                                        <option value="RS" {% if item.estado == 'RS' %}selected{% endif %}>Rio Grande do Sul</option>
+                                        <option value="RO" {% if item.estado == 'RO' %}selected{% endif %}>Rondônia</option>
+                                        <option value="RR" {% if item.estado == 'RR' %}selected{% endif %}>Roraima</option>
+                                        <option value="SC" {% if item.estado == 'SC' %}selected{% endif %}>Santa Catarina</option>
+                                        <option value="SP" {% if item.estado == 'SP' %}selected{% endif %}>São Paulo</option>
+                                        <option value="SE" {% if item.estado == 'SE' %}selected{% endif %}>Sergipe</option>
+                                        <option value="TO" {% if item.estado == 'TO' %}selected{% endif %}>Tocantins</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Botões de ação -->
+                            <div class="mt-5 pt-3 border-top">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="{% url 'lista_funcionarios' %}" class="btn btn-outline-secondary px-4">
+                                        <i class="bi bi-x-circle"></i> Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="bi bi-check-circle"></i> Atualizar Funcionário
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar com imagem do funcionário -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 rounded-4 sticky-top" style="top: 20px;">
+                    <div class="card-header bg-white border-0 pt-4 pb-0">
+                        <h4 class="mb-0">
+                            <i class="bi bi-image text-primary"></i> 
+                            Foto do Funcionário
+                        </h4>
+                        <p class="text-muted small mt-1">Adicione ou altere a foto</p>
+                    </div>
+                    
+                    <div class="card-body text-center">
+                        <!-- Div para exibir a imagem -->
+                        <div class="foto-perfil-container mb-4">
+                            {% if item.foto %}
+                                <img src="{{ item.foto.url }}" alt="Foto de {{ item.pnome }} {{ item.snome }}" 
+                                     class="foto-perfil img-fluid rounded-circle shadow-lg"
+                                     id="fotoPreview">
+                            {% else %}
+                                <div class="avatar-placeholder rounded-circle shadow-lg mx-auto" id="fotoPreviewPlaceholder">
+                                    <i class="bi bi-person display-1"></i>
+                                    <p class="mt-2 mb-0 small">Sem foto</p>
+                                </div>
+                                <img src="" alt="" class="foto-perfil img-fluid rounded-circle shadow-lg d-none" id="fotoPreview">
+                            {% endif %}
+                        </div>
+
+                        <!-- Nome do funcionário -->
+                        <h5 class="mb-1">{{ item.pnome }} {{ item.snome }}</h5>
+                        <p class="text-muted small mb-3">
+                            {% if item.id_tipo == 1 %}👑 Admin
+                            {% elif item.id_tipo == 2 %}👥 Membro
+                            {% elif item.id_tipo == 3 %}💼 Contratado
+                            {% else %}🤝 Voluntário{% endif %}
+                        </p>
+
+                        <!-- Upload de imagem -->
+                        <div class="upload-area mb-3">
+                            <label for="fotoInput" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-cloud-upload"></i> 
+                                Selecionar Foto
+                            </label>
+                            <input type="file" name="foto" id="fotoInput" 
+                                   class="d-none" accept="image/*">
+                            <small class="text-muted d-block mt-2">
+                                Formatos: JPG, PNG, GIF (Max 5MB)
+                            </small>
+                        </div>
+
+                        <!-- Botão remover foto -->
+                        {% if item.foto %}
+                        <button type="button" class="btn btn-outline-danger btn-sm w-100" id="removerFoto">
+                            <i class="bi bi-trash"></i> Remover Foto
+                        </button>
+                        {% endif %}
+
+                        <!-- Informações adicionais -->
+                        <hr class="my-4">
+                        
+                        <div class="info-adicional text-start">
+                            <h6 class="mb-3">
+                                <i class="bi bi-info-circle-fill text-primary"></i> 
+                                Informações
+                            </h6>
+                            <div class="small text-muted">
+                                <p class="mb-2">
+                                    <i class="bi bi-calendar"></i> 
+                                    Cadastrado em: {{ item.data_cadastro|default:"---" }}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="bi bi-envelope"></i> 
+                                    Email: {{ item.email|default:"Não informado" }}
+                                </p>
+                                <p class="mb-0">
+                                    <i class="bi bi-building"></i> 
+                                    ID Funcionário: #{{ item.id_funcionario }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .edit-funcionario-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+        min-height: calc(100vh - 56px);
+    }
+    
+    /* Estilo do container da foto */
+    .foto-perfil-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .foto-perfil {
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border: 4px solid white;
+        transition: transform 0.3s ease;
+    }
+    
+    .foto-perfil:hover {
+        transform: scale(1.05);
+    }
+    
+    .avatar-placeholder {
+        width: 180px;
+        height: 180px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin: 0 auto;
+    }
+    
+    .avatar-placeholder i {
+        font-size: 4rem;
+    }
+    
+    /* Estilização dos inputs */
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    /* Área de upload */
+    .upload-area {
+        cursor: pointer;
+    }
+    
+    /* Card sticky */
+    .sticky-top {
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .foto-perfil, .avatar-placeholder {
+            width: 140px;
+            height: 140px;
+        }
+        
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .sticky-top {
+            position: relative;
+            top: 0;
+            margin-top: 20px;
+        }
+    }
+    
+    /* Botões */
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        transition: transform 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Máscaras para CPF e Telefone
+        const cpfInput = document.querySelector('.cpf-mask');
+        const phoneInput = document.querySelector('.phone-mask');
+        
+        if (cpfInput) {
+            cpfInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    e.target.value = value;
+                }
+            });
+        }
+        
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    if (value.length > 2) {
+                        value = `(${value.slice(0,2)}) ${value.slice(2)}`;
+                    }
+                    if (value.length > 10) {
+                        value = value.slice(0, 10) + '-' + value.slice(10);
+                    } else if (value.length > 9) {
+                        value = value.slice(0, 9) + '-' + value.slice(9);
+                    }
+                    e.target.value = value;
+                }
+            });
+        }
+        
+        // Preview da imagem antes do upload
+        const fotoInput = document.getElementById('fotoInput');
+        const fotoPreview = document.getElementById('fotoPreview');
+        const fotoPlaceholder = document.getElementById('fotoPreviewPlaceholder');
+        
+        if (fotoInput) {
+            fotoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        if (fotoPreview) {
+                            fotoPreview.src = event.target.result;
+                            fotoPreview.classList.remove('d-none');
+                            if (fotoPlaceholder) {
+                                fotoPlaceholder.classList.add('d-none');
+                            }
+                        } else if (fotoPlaceholder) {
+                            // Se não existe tag img, cria uma
+                            const newImg = document.createElement('img');
+                            newImg.src = event.target.result;
+                            newImg.alt = 'Preview';
+                            newImg.className = 'foto-perfil img-fluid rounded-circle shadow-lg';
+                            newImg.id = 'fotoPreview';
+                            const container = document.querySelector('.foto-perfil-container');
+                            if (container) {
+                                container.innerHTML = '';
+                                container.appendChild(newImg);
+                            }
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Remover foto
+        const removerBtn = document.getElementById('removerFoto');
+        if (removerBtn) {
+            removerBtn.addEventListener('click', function() {
+                if (confirm('Tem certeza que deseja remover a foto do funcionário?')) {
+                    // Adicionar campo hidden para indicar remoção
+                    const form = document.getElementById('editForm');
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'remover_foto';
+                    hiddenInput.value = 'true';
+                    form.appendChild(hiddenInput);
+                    
+                    // Esconder imagem visualmente
+                    const foto = document.getElementById('fotoPreview');
+                    if (foto) {
+                        foto.classList.add('d-none');
+                    }
+                    if (fotoPlaceholder) {
+                        fotoPlaceholder.classList.remove('d-none');
+                    }
+                    
+                    // Desabilitar botão
+                    removerBtn.disabled = true;
+                    removerBtn.textContent = '✓ Foto removida';
+                }
+            });
+        }
+        
+        // Validação do formulário antes de enviar
+        const form = document.getElementById('editForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const pnome = document.querySelector('[name="pnome"]').value.trim();
+                const snome = document.querySelector('[name="snome"]').value.trim();
+                const cpf = document.querySelector('[name="cpf"]').value.replace(/\D/g, '');
+                const telefone = document.querySelector('[name="telefone"]').value.replace(/\D/g, '');
+                
+                if (!pnome || !snome) {
+                    e.preventDefault();
+                    alert('⚠️ Por favor, preencha o nome completo do funcionário.');
+                    return false;
+                }
+                
+                if (cpf.length !== 11) {
+                    e.preventDefault();
+                    alert('⚠️ CPF inválido! O CPF deve conter 11 dígitos.');
+                    return false;
+                }
+                
+                if (telefone.length < 10 || telefone.length > 11) {
+                    e.preventDefault();
+                    alert('⚠️ Telefone inválido! O telefone deve conter 10 ou 11 dígitos (com DDD).');
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+    });
+</script>
+
+<!-- Ícones Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

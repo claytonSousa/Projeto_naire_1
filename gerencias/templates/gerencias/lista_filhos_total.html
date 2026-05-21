@@ -1,54 +1,581 @@
-{% extends 'bases.html'%}
-    
-{% block page_title %}
-    LISTA FUNCIONÁRIOS
-{% endblock %}
-{% block container %}
+{% extends 'bases.html' %}
+{% load static %}
 
-    {% csrf_token %}
-    <label>LISTA DA FILHOS</label>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">ID RESP</th>
-                <th scope="col">NOME</th>
-                <th scope="col">DT NASC</th>
-                <th scope="col">CPF</th>
-                <th scope="col">SEXO</th>
-                <th scope="col">ROUPA</th>
-                <th scope="col">SAPATO</th>
-                <th scope="col">OUT. ONG</th>
-                <th scope="col">DT CADASTRO</th> 
-                <th scope="col">AÇÃO</th> 
-            </tr>
-        </thead>
-        
-        <tbody>
-            {% for filho in lista %}
-                <tr>
-                    <td>{{ filho.id_filho }}</td>
-                    <td>{{ filho.id_responsavel }}</td>
-                    <td>{{ filho.pnome }}  {{ filho.snome }}</td>
-                    <td>{{ filho.data }}</td>
-                    <td>{{ filho.cpf}}</td>
-                    <td>{{ filho.sexo}}</td>
-                    <td>{{ filho.numero_roupa }}</td>
-                    <td>{{ filho.numero_sapato }}</td>
-                    <td>{{ filho.cadastro_outra_ong }}</td>
-                    <td>{{ filho.data_cadastro }}</td>
-                    <td>
-                        <a href="{% url 'desativar_filho' id_filho=filho.id_filho %}" class="btn btn-danger btn-sm">
-                            DESATIVAR
+{% block page_title %}
+    Todos os Filhos | NAIRE
+{% endblock %}
+
+{% block container %}
+<div class="filhos-total-container">
+    <div class="container-fluid py-4">
+        <!-- Header da página -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="bi bi-people-fill text-primary"></i> 
+                            Todos os Filhos
+                        </h1>
+                        <p class="text-muted lead mb-0">
+                            Gerencie todas as crianças cadastradas na ONG NAIRE
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'lista_responsavel' %}" class="btn btn-outline-secondary btn-lg shadow-sm">
+                            <i class="bi bi-arrow-left"></i> 
+                            Voltar para Responsáveis
                         </a>
-                    </td>
-                </tr>   
-        </tbody>
-        {% empty %}
-        <tr>
-            <td colspan="7">Nenhum registro encontrado.</td>
-        </tr>
-        {% endfor %}
-    </table>
+                    </div>
+                </div>
+                <hr class="my-3">
+            </div>
+        </div>
+
+        <!-- Filtros e busca -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-5">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0" 
+                           placeholder="Buscar filho por nome, CPF ou responsável..." 
+                           id="searchInput">
+                    <button class="btn btn-primary" type="button" id="searchBtn">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select shadow-sm" id="filterSexo">
+                    <option value="todos">📋 Todos os sexos</option>
+                    <option value="M">👨 Masculino</option>
+                    <option value="F">👩 Feminino</option>
+                    <option value="O">🌱 Outro</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select shadow-sm" id="filterOng">
+                    <option value="todos">🏢 Todas as ONGs</option>
+                    <option value="sim">⚠️ Cadastrado em outra ONG</option>
+                    <option value="nao">✅ Apenas NAIRE</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Cards de estatísticas -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Total de Filhos</h6>
+                                <h2 class="mb-0 fw-bold">{{ lista|length }}</h2>
+                            </div>
+                            <i class="bi bi-people fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Meninos</h6>
+                                <h2 class="mb-0 fw-bold" id="totalMeninos">0</h2>
+                            </div>
+                            <i class="bi bi-gender-male fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Meninas</h6>
+                                <h2 class="mb-0 fw-bold" id="totalMeninas">0</h2>
+                            </div>
+                            <i class="bi bi-gender-female fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Outra ONG</h6>
+                                <h2 class="mb-0 fw-bold" id="totalOutraOng">0</h2>
+                            </div>
+                            <i class="bi bi-building fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela responsiva -->
+        <div class="table-responsive shadow-sm rounded-4">
+            <table class="table table-hover align-middle mb-0" id="filhosTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="px-4">#ID</th>
+                        <th scope="col">👤 NOME</th>
+                        <th scope="col">🎂 DT NASC</th>
+                        <th scope="col">🆔 CPF</th>
+                        <th scope="col">⚧ SEXO</th>
+                        <th scope="col">👕 ROUPA</th>
+                        <th scope="col">👞 SAPATO</th>
+                        <th scope="col">🏢 OUT. ONG</th>
+                        <th scope="col">📅 DT CADASTRO</th>
+                        <th scope="col" class="text-center">⚙️ AÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for filho in lista %}
+                    <tr class="filho-row" 
+                        data-nome="{{ filho.pnome }} {{ filho.snome }}"
+                        data-sexo="{{ filho.sexo }}"
+                        data-nascimento="{{ filho.data }}"
+                        data-outra-ong="{{ filho.cadastro_outra_ong }}">
+                        <td class="px-4 fw-bold">#{{ filho.id_filho }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3">
+                                    <span class="initials">{{ filho.pnome|slice:":1" }}{{ filho.snome|slice:":1" }}</span>
+                                </div>
+                                <div>
+                                    <strong>{{ filho.pnome }} {{ filho.snome }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-person-badge"></i> Resp: #{{ filho.id_responsavel }}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <i class="bi bi-calendar3 text-muted"></i>
+                            {{ filho.data|date:"d/m/Y"|default:"—" }}
+                            <br>
+                            <small class="text-muted idade-text" data-nasc="{{ filho.data }}"></small>
+                        </td>
+                        <td>
+                            {% if filho.cpf %}
+                                <code class="cpf-display">{{ filho.cpf }}</code>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if filho.sexo == 'M' %}
+                                <span class="badge bg-primary">👨 Masculino</span>
+                            {% elif filho.sexo == 'F' %}
+                                <span class="badge bg-danger">👩 Feminino</span>
+                            {% else %}
+                                <span class="badge bg-secondary">🌱 Outro</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-dark p-2">
+                                <i class="bi bi-person-standing"></i> {{ filho.numero_roupa|default:"—" }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-dark p-2">
+                                <i class="bi bi-shoe-print"></i> {{ filho.numero_sapato|default:"—" }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if filho.cadastro_outra_ong == 'S' or filho.cadastro_outra_ong == 'Sim' %}
+                                <span class="badge bg-warning text-dark">⚠️ Sim</span>
+                            {% else %}
+                                <span class="badge bg-success">✅ Não</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small>
+                                <i class="bi bi-calendar-check text-muted"></i>
+                                {{ filho.data_cadastro|date:"d/m/Y H:i"|default:"—" }}
+                            </small>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'desativar_filho' id_filho=filho.id_filho %}" 
+                                   class="btn btn-outline-danger btn-sm desativar-btn"
+                                   data-bs-toggle="tooltip" 
+                                   title="Desativar filho"
+                                   data-nome="{{ filho.pnome }} {{ filho.snome }}">
+                                    <i class="bi bi-person-x-fill"></i> Desativar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center py-5">
+                            <i class="bi bi-emoji-smile display-1 text-muted"></i>
+                            <p class="mt-3 text-muted">Nenhum filho cadastrado ainda.</p>
+                            <a href="{% url 'lista_responsavel' %}" class="btn btn-primary mt-2">
+                                <i class="bi bi-people-fill"></i> Cadastrar responsável primeiro
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer da tabela com informações -->
+        <div class="row mt-4 align-items-center">
+            <div class="col-md-6">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-info-circle"></i> 
+                    Mostrando <strong id="visibleCount">{{ lista|length }}</strong> de <strong id="totalCount">{{ lista|length }}</strong> filhos
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-outline-primary btn-sm" id="exportBtn">
+                    <i class="bi bi-download"></i> Exportar Lista
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos personalizados */
+    .filhos-total-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: calc(100vh - 56px);
+    }
     
+    /* Gradientes para os cards */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+    
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    }
+    
+    /* Avatar circular */
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .avatar-circle .initials {
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+    
+    /* Tabela */
+    .table {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Botões */
+    .btn-group .btn {
+        transition: all 0.2s ease;
+    }
+    
+    .btn-group .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        border: none;
+        transition: transform 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(26, 188, 156, 0.3);
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .filho-row {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .btn-group .btn {
+            margin: 2px 0;
+        }
+        
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .avatar-circle .initials {
+            font-size: 12px;
+        }
+        
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .card-body h2 {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #1abc9c;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #16a085;
+    }
+    
+    /* Badges */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+    }
+    
+    code {
+        font-size: 0.85rem;
+        color: #1abc9c;
+        background: #f0fdfa;
+        padding: 2px 6px;
+        border-radius: 6px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para calcular idade
+        function calcularIdade(dataNascimento) {
+            if (!dataNascimento) return null;
+            const hoje = new Date();
+            const nascimento = new Date(dataNascimento);
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mes = hoje.getMonth() - nascimento.getMonth();
+            if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+                idade--;
+            }
+            return idade;
+        }
+        
+        // Função para formatar CPF
+        function formatarCPF(cpf) {
+            const numbers = cpf.replace(/\D/g, '');
+            if (numbers.length === 11) {
+                return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+            return cpf;
+        }
+        
+        // Calcular estatísticas e formatar
+        const rows = document.querySelectorAll('.filho-row');
+        let meninos = 0;
+        let meninas = 0;
+        let outraOng = 0;
+        
+        rows.forEach(row => {
+            const sexo = row.getAttribute('data-sexo');
+            const outraOngValue = row.getAttribute('data-outra-ong');
+            const dataNasc = row.getAttribute('data-nascimento');
+            const cpfElement = row.querySelector('.cpf-display');
+            
+            // Contagem por sexo
+            if (sexo === 'M') meninos++;
+            if (sexo === 'F') meninas++;
+            
+            // Contagem outra ONG
+            if (outraOngValue === 'S' || outraOngValue === 'Sim') outraOng++;
+            
+            // Formatar CPF
+            if (cpfElement && cpfElement.textContent) {
+                cpfElement.textContent = formatarCPF(cpfElement.textContent);
+            }
+            
+            // Calcular e exibir idade
+            if (dataNasc) {
+                const idade = calcularIdade(dataNasc);
+                const idadeSpan = row.querySelector('.idade-text');
+                if (idadeSpan && idade !== null && idade >= 0) {
+                    idadeSpan.textContent = `${idade} ${idade === 1 ? 'ano' : 'anos'}`;
+                }
+            }
+        });
+        
+        document.getElementById('totalMeninos').textContent = meninos;
+        document.getElementById('totalMeninas').textContent = meninas;
+        document.getElementById('totalOutraOng').textContent = outraOng;
+        
+        // Funções de busca e filtro
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const filterSexo = document.getElementById('filterSexo');
+        const filterOng = document.getElementById('filterOng');
+        const table = document.getElementById('filhosTable');
+        const tableRows = table.querySelectorAll('.filho-row');
+        
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const sexoFilter = filterSexo.value;
+            const ongFilter = filterOng.value;
+            let visible = 0;
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const sexo = row.getAttribute('data-sexo');
+                const outraOngValue = row.getAttribute('data-outra-ong');
+                
+                const matchesSearch = text.includes(searchTerm);
+                const matchesSexo = sexoFilter === 'todos' || sexo === sexoFilter;
+                
+                let matchesOng = true;
+                if (ongFilter === 'sim') {
+                    matchesOng = (outraOngValue === 'S' || outraOngValue === 'Sim');
+                } else if (ongFilter === 'nao') {
+                    matchesOng = !(outraOngValue === 'S' || outraOngValue === 'Sim');
+                }
+                
+                if (matchesSearch && matchesSexo && matchesOng) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('visibleCount').textContent = visible;
+        }
+        
+        searchInput.addEventListener('keyup', filterTable);
+        searchBtn.addEventListener('click', filterTable);
+        filterSexo.addEventListener('change', filterTable);
+        filterOng.addEventListener('change', filterTable);
+        
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Confirmação antes de desativar
+        const desativarBtns = document.querySelectorAll('.desativar-btn');
+        desativarBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const nome = this.getAttribute('data-nome');
+                if (!confirm(`⚠️ Tem certeza que deseja desativar o registro de ${nome}?\n\nEsta ação pode ser revertida posteriormente.`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        // Exportar lista
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const visibleRows = document.querySelectorAll('.filho-row:visible');
+            let csvContent = "ID,Nome,ID Responsável,Data Nascimento,Idade,CPF,Sexo,Roupa,Sapato,Outra ONG,Data Cadastro\n";
+            
+            visibleRows.forEach(row => {
+                const id = row.cells[0]?.textContent.replace('#', '') || '';
+                const nome = row.cells[1]?.querySelector('strong')?.textContent || '';
+                const idResp = row.cells[1]?.querySelector('small')?.textContent.replace('Resp: #', '') || '';
+                const dataNasc = row.cells[2]?.textContent.split('\n')[0].trim() || '';
+                const idade = row.querySelector('.idade-text')?.textContent || '';
+                const cpf = row.cells[3]?.textContent.replace(/\./g, '').replace(/-/g, '') || '';
+                const sexo = row.cells[4]?.textContent.trim() || '';
+                const roupa = row.cells[5]?.textContent.replace('👕', '').trim() || '';
+                const sapato = row.cells[6]?.textContent.replace('👞', '').trim() || '';
+                const outraOng = row.cells[7]?.textContent.includes('Sim') ? 'Sim' : 'Não';
+                const dataCadastro = row.cells[8]?.textContent.trim() || '';
+                
+                csvContent += `${id},"${nome}",${idResp},"${dataNasc}","${idade}",${cpf},"${sexo}","${roupa}","${sapato}",${outraOng},"${dataCadastro}"\n`;
+            });
+            
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'todos_filhos.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Lista exportada com sucesso!');
+        });
+    });
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

@@ -501,9 +501,12 @@ def lista_madrinha_padrinho(request):
 
 @login_required
 def editar_madrinha_padrinho(request, id_mad_pad):
-    registro = get_object_or_404(TbMadrinhaPadrinho, id_mad_pad=id_mad_pad)
     
-    if request.method == 'POST':
+    registro = get_object_or_404(TbMadrinhaPadrinho, id_mad_pad=id_mad_pad)
+
+    return HttpResponse(registro.pnome)
+    
+    """if request.method == 'POST':
         try:
             # Atualiza dados
             registro.cpf = request.POST.get('cpf', '').replace('.', '').replace('-', '')
@@ -527,7 +530,7 @@ def editar_madrinha_padrinho(request, id_mad_pad):
         'registro': registro,
         'titulo': 'Editar Cadastro'
     }
-    return render(request, 'gerencias/form_madrinha_padrinho.html', contexto)
+    return render(request, 'gerencias/form_madrinha_padrinho.html', contexto)"""
 
 
 @login_required

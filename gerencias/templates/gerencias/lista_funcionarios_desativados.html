@@ -1,47 +1,596 @@
-{% extends 'bases.html'%}
-    
-{% block page_title %}
-    LISTA FUNCIONÁRIOS
-{% endblock %}
-{% block container %}
-    {% csrf_token %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>        
-                <th scope="col">NOME</th>
-                <th scope="col">CPF</th>
-                <th scope="col">TELEFONE</th>
-                <th scope="col">RUA/Nº</th>
-                <th scope="col">COMPLEMENTO</th>
-                <th scope="col">BAIRRO</th>
-                <th scope="col">CIDADE</th>
-                <th scope="col">ESTADO</th>
-                <th scope="col">ATIVO</th>
-                <th scope="col">REATIVAR</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for funcionario in lista %}
-                <tr>
-                    <td>{{ funcionario.id_funcionario }}</td>                  
-                    <td>{{ funcionario.pnome }} {{ funcionario.snome }}</td>
-                    <td>{{ funcionario.cpf_funcionario }}</td>
-                    <td>{{ funcionario.telefone }}</td>
-                    <td>{{ funcionario.endereco }}</td>
-                    <td>{{ funcionario.complemento }}</td>
-                    <td>{{ funcionario.bairro }}</td>
-                    <td>{{ funcionario.cidade }}</td>
-                    <td>{{ funcionario.estado }}</td>
-                    <td>{{ funcionario.flag_ativo}}</td>
-                    <td><a href="{% url 'reativa_funcionario' id_funcionario=funcionario.id_funcionario %}" class="btn btn-primary btn-sm">REATIVAR</a></td>
-                </tr>   
-        </tbody>
-        {% empty %}
-        <tr>
-            <td colspan="7">Nenhum registro encontrado.</td>
-        </tr>
-        {% endfor %}
-    </table>
+{% extends 'bases.html' %}
+{% load static %}
 
+{% block page_title %}
+    Funcionários Inativos | Reativação - NAIRE
+{% endblock %}
+
+{% block container %}
+<div class="funcionarios-container">
+    <div class="container-fluid py-4">
+        <!-- Header da página -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="bi bi-person-badge text-warning"></i> 
+                            Funcionários Inativos
+                        </h1>
+                        <p class="text-muted lead mb-0">
+                            Gerencie e reative colaboradores que estão inativos no sistema
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'lista_funcionarios' %}" class="btn btn-outline-success btn-lg shadow-sm">
+                            <i class="bi bi-person-check-fill"></i> 
+                            Ver Ativos
+                        </a>
+                    </div>
+                </div>
+                <hr class="my-3">
+            </div>
+        </div>
+
+        <!-- Filtros e busca -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-8">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0" 
+                           placeholder="Buscar funcionário por nome, CPF ou telefone..." 
+                           id="searchInput">
+                    <button class="btn btn-warning" type="button" id="searchBtn">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select shadow-sm" id="filterCity">
+                    <option value="">Todas as cidades</option>
+                    <!-- As cidades serão preenchidas via JavaScript -->
+                </select>
+            </div>
+        </div>
+
+        <!-- Cards de estatísticas -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Total Inativos</h6>
+                                <h2 class="mb-0 fw-bold">{{ lista|length }}</h2>
+                            </div>
+                            <i class="bi bi-person-x fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Cidades Atendidas</h6>
+                                <h2 class="mb-0 fw-bold" id="totalCities">0</h2>
+                            </div>
+                            <i class="bi bi-building fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-secondary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Total de Estados</h6>
+                                <h2 class="mb-0 fw-bold" id="totalStates">0</h2>
+                            </div>
+                            <i class="bi bi-map fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Tempo Médio</h6>
+                                <h2 class="mb-0 fw-bold" id="avgTime">--</h2>
+                            </div>
+                            <i class="bi bi-calendar fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela responsiva -->
+        <div class="table-responsive shadow-sm rounded-4">
+            <table class="table table-hover align-middle mb-0" id="funcionariosTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="px-4">#ID</th>
+                        <th scope="col">👤 FUNCIONÁRIO</th>
+                        <th scope="col">🆔 CPF</th>
+                        <th scope="col">📞 TELEFONE</th>
+                        <th scope="col">📍 ENDEREÇO</th>
+                        <th scope="col">🏙️ CIDADE/UF</th>
+                        <th scope="col">📊 STATUS</th>
+                        <th scope="col" class="text-center">⚙️ AÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for funcionario in lista %}
+                    <tr class="funcionario-row" 
+                        data-nome="{{ funcionario.pnome }} {{ funcionario.snome }}"
+                        data-cpf="{{ funcionario.cpf_funcionario }}"
+                        data-cidade="{{ funcionario.cidade }}"
+                        data-estado="{{ funcionario.estado }}">
+                        <td class="px-4 fw-bold text-muted">#{{ funcionario.id_funcionario }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-warning me-3">
+                                    <span class="initials">{{ funcionario.pnome|slice:":1" }}{{ funcionario.snome|slice:":1" }}</span>
+                                </div>
+                                <div>
+                                    <strong>{{ funcionario.pnome }} {{ funcionario.snome }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock-history"></i> Inativo
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <code class="cpf-display">{{ funcionario.cpf_funcionario }}</code>
+                        </td>
+                        <td>
+                            <i class="bi bi-whatsapp text-success"></i>
+                            <span class="phone-display">{{ funcionario.telefone }}</span>
+                        </td>
+                        <td>
+                            <small>
+                                <i class="bi bi-geo-alt-fill text-muted"></i>
+                                {{ funcionario.endereco }}, {{ funcionario.complemento|default:"—" }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-dark p-2">
+                                <i class="bi bi-building"></i> {{ funcionario.cidade }}/{{ funcionario.estado }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Inativo
+                            </span>
+                        </td>
+                        <td>
+                            <div class="text-center">
+                                <button class="btn btn-success btn-sm reativar-btn" 
+                                        data-id="{{ funcionario.id_funcionario }}"
+                                        data-nome="{{ funcionario.pnome }} {{ funcionario.snome }}">
+                                    <i class="bi bi-arrow-repeat"></i> Reativar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <i class="bi bi-emoji-smile display-1 text-muted"></i>
+                            <p class="mt-3 text-muted">Nenhum funcionário inativo encontrado.</p>
+                            <a href="{% url 'lista_funcionarios_ativos' %}" class="btn btn-primary mt-2">
+                                <i class="bi bi-people-fill"></i> Ver funcionários ativos
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer com informações -->
+        <div class="row mt-4 align-items-center">
+            <div class="col-md-6">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-info-circle"></i> 
+                    Mostrando <strong id="visibleCount">{{ lista|length }}</strong> de <strong id="totalCount">{{ lista|length }}</strong> funcionários inativos
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-outline-warning btn-sm" id="exportBtn">
+                    <i class="bi bi-download"></i> Exportar Lista
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .funcionarios-container {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff5d9 100%);
+        min-height: calc(100vh - 56px);
+    }
+    
+    /* Gradientes para os cards */
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+    
+    .bg-gradient-secondary {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    }
+    
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+    
+    /* Avatar circular */
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .avatar-circle .initials {
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+    
+    /* Tabela */
+    .table {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #fff9e6;
+        transform: scale(1.01);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    /* Botões */
+    .btn-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border: none;
+        color: white;
+    }
+    
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        color: white;
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        border: none;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    }
+    
+    /* Animação de pulso para botão reativar */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(39, 174, 96, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
+        }
+    }
+    
+    .reativar-btn:hover {
+        animation: pulse 1s;
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .funcionario-row {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .avatar-circle .initials {
+            font-size: 12px;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-body h2 {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #f39c12;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #e67e22;
+    }
+    
+    /* Badges */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+    }
+    
+    code {
+        font-size: 0.85rem;
+        color: #e67e22;
+        background: #fff9e6;
+        padding: 2px 6px;
+        border-radius: 6px;
+    }
+    
+    /* Input search */
+    .input-group-text {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+    
+    .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    
+    .btn-warning {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para formatar CPF
+        function formatCPF(cpf) {
+            const numbers = cpf.replace(/\D/g, '');
+            if (numbers.length === 11) {
+                return numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+            return cpf;
+        }
+        
+        // Função para formatar Telefone
+        function formatPhone(phone) {
+            const numbers = phone.replace(/\D/g, '');
+            if (numbers.length === 11) {
+                return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (numbers.length === 10) {
+                return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            }
+            return phone;
+        }
+        
+        // Aplicar formatação aos CPFs e telefones existentes
+        document.querySelectorAll('.cpf-display').forEach(el => {
+            el.textContent = formatCPF(el.textContent);
+        });
+        
+        document.querySelectorAll('.phone-display').forEach(el => {
+            el.textContent = formatPhone(el.textContent);
+        });
+        
+        // Preencher filtro de cidades
+        const cities = new Set();
+        document.querySelectorAll('.funcionario-row').forEach(row => {
+            const cidade = row.getAttribute('data-cidade');
+            if (cidade) cities.add(cidade);
+        });
+        
+        const cityFilter = document.getElementById('filterCity');
+        const sortedCities = Array.from(cities).sort();
+        sortedCities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            cityFilter.appendChild(option);
+        });
+        
+        // Atualizar estatísticas
+        const totalCities = cities.size;
+        const states = new Set();
+        document.querySelectorAll('.funcionario-row').forEach(row => {
+            const estado = row.getAttribute('data-estado');
+            if (estado) states.add(estado);
+        });
+        
+        document.getElementById('totalCities').textContent = totalCities;
+        document.getElementById('totalStates').textContent = states.size;
+        document.getElementById('avgTime').textContent = '30 dias';
+        
+        // Função de busca e filtro
+        function filterTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedCity = document.getElementById('filterCity').value;
+            const rows = document.querySelectorAll('.funcionario-row');
+            let visible = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const cidade = row.getAttribute('data-cidade');
+                const matchesSearch = text.includes(searchTerm);
+                const matchesCity = !selectedCity || cidade === selectedCity;
+                
+                if (matchesSearch && matchesCity) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('visibleCount').textContent = visible;
+        }
+        
+        document.getElementById('searchInput').addEventListener('keyup', filterTable);
+        document.getElementById('searchBtn').addEventListener('click', filterTable);
+        document.getElementById('filterCity').addEventListener('change', filterTable);
+        
+        // Modal de confirmação para reativação
+        const reativarBtns = document.querySelectorAll('.reativar-btn');
+        
+        reativarBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                const nome = this.getAttribute('data-nome');
+                
+                Swal.fire({
+                    title: 'Reativar Funcionário',
+                    html: `
+                        <div class="text-center">
+                            <i class="bi bi-arrow-repeat text-success" style="font-size: 48px;"></i>
+                            <p class="mt-3">Deseja reativar o funcionário <strong>${nome}</strong>?</p>
+                            <p class="text-muted small">Após a reativação, ele voltará a ter acesso ao sistema normalmente.</p>
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#27ae60',
+                    cancelButtonColor: '#95a5a6',
+                    confirmButtonText: '✅ Sim, reativar',
+                    cancelButtonText: '❌ Cancelar',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mostrar loading
+                        Swal.fire({
+                            title: 'Reativando...',
+                            text: 'Por favor, aguarde.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        
+                        // Redirecionar para a URL de reativação
+                        window.location.href = `/reativa_funcionario/${id}/`;
+                    }
+                });
+            });
+        });
+        
+        // Exportar lista
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const rows = document.querySelectorAll('.funcionario-row:visible');
+            let csvContent = "ID,Nome,CPF,Telefone,Cidade,Estado\n";
+            
+            rows.forEach(row => {
+                const id = row.cells[0]?.textContent.replace('#', '') || '';
+                const nome = row.cells[1]?.querySelector('strong')?.textContent || '';
+                const cpf = row.cells[2]?.textContent || '';
+                const telefone = row.cells[3]?.querySelector('.phone-display')?.textContent || '';
+                const cidade = row.getAttribute('data-cidade') || '';
+                const estado = row.getAttribute('data-estado') || '';
+                
+                csvContent += `${id},"${nome}",${cpf},${telefone},"${cidade}",${estado}\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'funcionarios_inativos.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Exportado!',
+                text: 'A lista foi exportada com sucesso.',
+                confirmButtonColor: '#27ae60',
+                timer: 2000
+            });
+        });
+        
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

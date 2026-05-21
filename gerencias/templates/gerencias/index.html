@@ -1,33 +1,302 @@
-{% extends 'bases.html'%}
-{% load static %}  
+{% extends 'bases.html' %}
+{% load static %}
+
 {% block page_title %}
-    ONG NAIRE
+    Blog NAIRE | Conectando Corações
 {% endblock %}
+
 {% block container %}
-  <div id="carouselExampleIndicators" class="carousel slide">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+<div class="blog-container">
+    <div class="container py-4">
+        <div class="row">
+            <!-- Conteúdo principal do blog -->
+            <div class="col-lg-8">
+                <!-- Header do blog -->
+                <div class="blog-header mb-5">
+                    <h1 class="blog-title display-4 fw-bold">Blog NAIRE</h1>
+                    <p class="blog-subtitle lead text-muted">Histórias que inspiram, ações que transformam</p>
+                    <hr class="my-4">
+                </div>
+
+                <!-- Destaque (carousel adaptado para blog) -->
+                <div class="featured-post mb-5">
+                    <div id="carouselExampleIndicators" class="carousel slide shadow rounded-4 overflow-hidden">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="{% static 'imagens/imagem01.jpg' %}" class="d-block w-100" alt="Post em destaque" style="height: 450px; object-fit: cover;">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
+                                    <h5>Novo projeto educacional</h5>
+                                    <p>Leia a história completa</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{% static 'imagens/imagem02.jpg' %}" class="d-block w-100" alt="" style="height: 450px; object-fit: cover;">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
+                                    <h5>Campanha de arrecadação</h5>
+                                    <p>Como você pode ajudar</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="{% static 'imagens/imagem03.jpg' %}" class="d-block w-100" alt="" style="height: 450px; object-fit: cover;">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
+                                    <h5>Voluntários em ação</h5>
+                                    <p>Veja os resultados</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Próxima</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid de posts do blog -->
+                <div class="blog-posts">
+                    <h3 class="mb-4">Últimas Publicações</h3>
+                    <div class="row g-4">
+                        <!-- Post 1 -->
+                        <div class="col-md-6">
+                            <div class="card blog-card h-100 shadow-sm border-0">
+                                <img src="{% static 'imagens/imagem01.jpg' %}" class="card-img-top" alt="Post 1" style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <div class="post-meta text-muted small mb-2">
+                                        <span><i class="bi bi-calendar"></i> 15 de Janeiro, 2024</span>
+                                        <span class="ms-2"><i class="bi bi-person"></i> Por Equipe NAIRE</span>
+                                    </div>
+                                    <h5 class="card-title">Transformando vidas através da educação</h5>
+                                    <p class="card-text">Conheça a história de superação de nossas crianças e como a educação está mudando realidades...</p>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">Leia mais →</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Post 2 -->
+                        <div class="col-md-6">
+                            <div class="card blog-card h-100 shadow-sm border-0">
+                                <img src="{% static 'imagens/imagem02.jpg' %}" class="card-img-top" alt="Post 2" style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <div class="post-meta text-muted small mb-2">
+                                        <span><i class="bi bi-calendar"></i> 10 de Janeiro, 2024</span>
+                                        <span class="ms-2"><i class="bi bi-person"></i> Por Ana Silva</span>
+                                    </div>
+                                    <h5 class="card-title">Campanha do Agasalho bate recorde</h5>
+                                    <p class="card-text">Arrecadamos mais de 500 peças de roupa. Veja como foi a campanha e quem foi beneficiado...</p>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">Leia mais →</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Post 3 -->
+                        <div class="col-md-6">
+                            <div class="card blog-card h-100 shadow-sm border-0">
+                                <img src="{% static 'imagens/imagem03.jpg' %}" class="card-img-top" alt="Post 3" style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <div class="post-meta text-muted small mb-2">
+                                        <span><i class="bi bi-calendar"></i> 5 de Janeiro, 2024</span>
+                                        <span class="ms-2"><i class="bi bi-person"></i> Por Carlos Mendes</span>
+                                    </div>
+                                    <h5 class="card-title">Voluntários: o coração da NAIRE</h5>
+                                    <p class="card-text">Conheça os voluntários que dedicam seu tempo para fazer a diferença na comunidade...</p>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">Leia mais →</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Post 4 -->
+                        <div class="col-md-6">
+                            <div class="card blog-card h-100 shadow-sm border-0">
+                                <img src="{% static 'imagens/imagem01.jpg' %}" class="card-img-top" alt="Post 4" style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <div class="post-meta text-muted small mb-2">
+                                        <span><i class="bi bi-calendar"></i> 28 de Dezembro, 2023</span>
+                                        <span class="ms-2"><i class="bi bi-person"></i> Por Equipe NAIRE</span>
+                                    </div>
+                                    <h5 class="card-title">Retrospectiva 2023: conquistas e desafios</h5>
+                                    <p class="card-text">Relembre os principais momentos do ano e como sua contribuição foi fundamental...</p>
+                                    <a href="#" class="btn btn-outline-primary btn-sm">Leia mais →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paginação -->
+                <nav class="mt-5" aria-label="Navegação do blog">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Próxima</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Sidebar do blog -->
+            <div class="col-lg-4">
+                <div class="blog-sidebar">
+                    <!-- Sobre -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Sobre o Blog</h5>
+                            <p class="card-text text-muted">O blog da ONG NAIRE é um espaço para compartilhar histórias inspiradoras, atualizações de projetos e formas de você participar dessa corrente do bem.</p>
+                            <a href="#" class="btn btn-primary btn-sm">Saiba mais sobre nós</a>
+                        </div>
+                    </div>
+
+                    <!-- Busca -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Buscar</h5>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Pesquisar posts..." aria-label="Buscar">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categorias -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Categorias</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="#" class="text-decoration-none">📚 Educação</a> <span class="text-muted">(12)</span></li>
+                                <li class="mt-2"><a href="#" class="text-decoration-none">💚 Voluntariado</a> <span class="text-muted">(8)</span></li>
+                                <li class="mt-2"><a href="#" class="text-decoration-none">🎯 Campanhas</a> <span class="text-muted">(6)</span></li>
+                                <li class="mt-2"><a href="#" class="text-decoration-none">🏆 Histórias de Sucesso</a> <span class="text-muted">(10)</span></li>
+                                <li class="mt-2"><a href="#" class="text-decoration-none">📢 Eventos</a> <span class="text-muted">(4)</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Posts recentes -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Posts Recentes</h5>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">Transformando vidas através da educação</a>
+                                    <small class="text-muted d-block">15/01/2024</small>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">Campanha do Agasalho bate recorde</a>
+                                    <small class="text-muted d-block">10/01/2024</small>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="#" class="text-decoration-none">Voluntários: o coração da NAIRE</a>
+                                    <small class="text-muted d-block">05/01/2024</small>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Redes Sociais -->
+                    <div class="card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Siga-nos</h5>
+                            <div class="d-flex gap-3">
+                                <a href="#" class="text-decoration-none" style="color: #4267B2;">
+                                    <i class="bi bi-facebook fs-4"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none" style="color: #E4405F;">
+                                    <i class="bi bi-instagram fs-4"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none" style="color: #1DA1F2;">
+                                    <i class="bi bi-twitter fs-4"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none" style="color: #FF0000;">
+                                    <i class="bi bi-youtube fs-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="card border-0 shadow-sm bg-primary bg-opacity-10">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">📧 Newsletter</h5>
+                            <p class="card-text small">Receba nossas atualizações por email</p>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Seu melhor email">
+                            </div>
+                            <button class="btn btn-primary w-100">Inscrever-se</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="{% static 'imagens/imagem01.jpg' %}" alt="Minha Imagem">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'imagens/imagem02.jpg' %}" class="d-block w-100" alt="">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'imagens/imagem03.jpg' %}" class="d-block w-100" alt="">
-      </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Anterior</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Próxima</span>
-    </button>
-  </div>
+</div>
+
+<style>
+    .blog-title {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .blog-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .blog-card .card-img-top {
+        transition: transform 0.3s ease;
+    }
+    
+    .blog-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .blog-sidebar .card {
+        transition: transform 0.2s ease;
+    }
+    
+    .blog-sidebar .card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .pagination .page-link {
+        color: #3498db;
+    }
+    
+    .pagination .active .page-link {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    @media (max-width: 768px) {
+        .blog-title {
+            font-size: 2rem;
+        }
+        
+        .carousel-item img {
+            height: 300px !important;
+        }
+    }
+</style>
+
+<!-- Adicione isso no seu base.html ou aqui -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

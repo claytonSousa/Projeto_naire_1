@@ -1,64 +1,475 @@
-{% extends 'bases.html'%}
-    
+{% extends 'bases.html' %}
+{% load static %}
+
 {% block page_title %}
-    NOVO FUNCIONÁRIO
+    NOVO FUNCIONÁRIO | NAIRE
 {% endblock %}
+
 {% block container %}
-    <br><br>
-    <div>
-        <h3>NOVO FUNCIONÁRIO</h3>
-        <form action="{% url 'insere_novo_funcionario' %}" method="POST" >
-            {% csrf_token %}
-            <label>TIPO FUNCIONARIO</label>
-            <select  name="tp_funcionario">
-                <option value="1">ADMIN</option>
-                <option value="2">MEMBRO</option>
-                <option value="3">CONTRATADO</option>
-                <option value="4">VOLUNTÁRIO</option>
-            </select>
-            <br><br>
-            <input type="text" placeholder="NOME" name="pnome">
-            <br><br>
-            <input type="text" placeholder="SOBRENOME" name="snome">
-            <br><br>
-            <input type="text" placeholder="CPF" name="cpf">
-            <br><br>
-            <input type="text" placeholder="TEL" name="telefone">
-            <br><br>
-            <input type="text" placeholder="RUA DA PAZ" name="rua">
-            <br><br>
-            <input type="text" placeholder="NUMERO" name="numero">
-            <br><br>
-            <input type="text" placeholder="COMPLEMENTO" name="comp">
-            <br><br>
-            <input type="text" placeholder="BAIRRO" name="bairro">
-            <br><br>
-            <input type="text" placeholder="CIDADE" name="cidade">
-            <br><br>
-            <label>UF</label>
-            <select  name="estado">
-                <option value="SP">SP</option>
-                <option value="RJ">RJ</option>
-                <option value="MG">MG</option>
-                <option value="SC">SC</option>
-                <option value="BA">BA</option>
-                <option value="AM">AM</option>
-            </select>
-            <br><br>
-            <label>ATIVO</label>
-            <select  name="flag">
-                <option value="S">SIM</option>
-                <option value="N">NÃO</option>
-            </select>
-            <br><br>
-            <input type="submit" value="Enviar" class="btn btn-primary sm" method="POST" onclick="confirmarAtualizacao()" >
-        </form>  
+<div class="container-fluid px-4 py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <!-- Card principal -->
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <!-- Header com gradiente -->
+                <div class="card-header bg-gradient-primary text-white p-4 border-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-circle bg-white text-primary">
+                            <i class="bi bi-person-plus-fill fs-3"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-1 fw-bold">Novo Funcionário</h2>
+                            <p class="mb-0 opacity-75">Cadastre um novo colaborador na plataforma</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Corpo do formulário -->
+                <div class="card-body p-4 p-lg-5">
+                    <form action="{% url 'insere_novo_funcionario' %}" method="POST" id="formFuncionario" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Seção: Tipo e Status -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-person-badge me-1 text-primary"></i>Tipo de Funcionário
+                                </label>
+                                <select name="tp_funcionario" class="form-select form-select-lg shadow-sm" required>
+                                    <option value="" disabled selected>Selecione o tipo</option>
+                                    <option value="1">👑 ADMINISTRADOR</option>
+                                    <option value="2">👥 MEMBRO</option>
+                                    <option value="3">💼 CONTRATADO</option>
+                                    <option value="4">🤝 VOLUNTÁRIO</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-toggle-on me-1 text-primary"></i>Status
+                                </label>
+                                <select name="flag" class="form-select form-select-lg shadow-sm" required>
+                                    <option value="S" selected>✅ ATIVO</option>
+                                    <option value="N">⭕ INATIVO</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Seção: Dados Pessoais -->
+                        <div class="section-title mb-3">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span>Dados Pessoais</span>
+                        </div>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Primeiro Nome</label>
+                                <input type="text" name="pnome" class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Digite o primeiro nome" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Sobrenome</label>
+                                <input type="text" name="snome" class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Digite o sobrenome" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">CPF</label>
+                                <input type="text" name="cpf" class="form-control form-control-lg shadow-sm cpf-mask" 
+                                       placeholder="000.000.000-00" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Telefone</label>
+                                <input type="text" name="telefone" class="form-control form-control-lg shadow-sm phone-mask" 
+                                       placeholder="(00) 00000-0000" required>
+                            </div>
+                        </div>
+
+                        <!-- Seção: Endereço -->
+                        <div class="section-title mb-3 mt-4">
+                            <i class="bi bi-geo-alt me-2"></i>
+                            <span>Endereço</span>
+                        </div>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Logradouro</label>
+                                <input type="text" name="rua" class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Rua, Avenida, Alameda..." required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Número</label>
+                                <input type="text" name="numero" class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Nº" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Complemento</label>
+                                <input type="text" name="comp" class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Apto, Bloco, Casa...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Bairro</label>
+                                <input type="text" name="bairro" class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Bairro" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Cidade</label>
+                                <input type="text" name="cidade" class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Cidade" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">UF</label>
+                                <select name="estado" class="form-select form-select-lg shadow-sm" required>
+                                    <option value="" disabled selected>Selecione o estado</option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">Mato Grosso do Sul</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">Rio Grande do Norte</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Botões de ação -->
+                        <div class="d-flex gap-3 justify-content-end mt-5 pt-3 border-top">
+                            <a href="{% url 'lista_funcionarios' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">
+                                <i class="bi bi-check-lg"></i> Cadastrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <script>
-        function confirmarAtualizacao() {
-            if (confirm('Tem certeza que deseja continuar?')) {
-                window.location.href = "{% url 'insere_novo_funcionario' %}";
-            }
+</div>
+
+<style>
+    /* Gradiente para o header */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    /* Ícone circular */
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* Título de seção */
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #495057;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .section-title i {
+        color: #667eea;
+        font-size: 1.2rem;
+    }
+    
+    /* Campos do formulário */
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    }
+    
+    .form-control-lg, .form-select-lg {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+    
+    /* Labels */
+    .form-label {
+        margin-bottom: 8px;
+        color: #2c3e50;
+        font-size: 0.9rem;
+    }
+    
+    /* Card */
+    .card {
+        border-radius: 20px;
+    }
+    
+    /* Botões */
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-outline-secondary {
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Animações */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
         }
-    </script>
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem !important;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-lg {
+            font-size: 0.9rem;
+            padding: 10px 20px;
+        }
+        
+        .icon-circle {
+            width: 45px;
+            height: 45px;
+        }
+        
+        .icon-circle i {
+            font-size: 1.5rem !important;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Campos inválidos */
+    .form-control:invalid, .form-select:invalid {
+        border-color: #dc3545;
+    }
+    
+    /* Loading do botão */
+    .btn-loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Máscara para CPF
+        const cpfInput = document.querySelector('.cpf-mask');
+        if (cpfInput) {
+            cpfInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    e.target.value = value;
+                }
+            });
+        }
+        
+        // Máscara para Telefone
+        const phoneInput = document.querySelector('.phone-mask');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    if (value.length > 2) {
+                        value = `(${value.slice(0,2)}) ${value.slice(2)}`;
+                    }
+                    if (value.length > 10) {
+                        value = value.slice(0, 10) + '-' + value.slice(10);
+                    } else if (value.length > 9) {
+                        value = value.slice(0, 9) + '-' + value.slice(9);
+                    }
+                    e.target.value = value;
+                }
+            });
+        }
+        
+        // Validação do formulário
+        const form = document.getElementById('formFuncionario');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validar campos obrigatórios
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos obrigatórios',
+                    text: 'Por favor, preencha todos os campos marcados como obrigatórios.',
+                    confirmButtonColor: '#667eea'
+                });
+                return;
+            }
+            
+            // Validar CPF
+            const cpf = cpfInput.value.replace(/\D/g, '');
+            if (cpf.length !== 11) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'CPF Inválido',
+                    text: 'O CPF deve conter 11 dígitos.',
+                    confirmButtonColor: '#667eea'
+                });
+                cpfInput.classList.add('is-invalid');
+                return;
+            }
+            
+            // Validar Telefone
+            const telefone = phoneInput.value.replace(/\D/g, '');
+            if (telefone.length < 10 || telefone.length > 11) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Telefone Inválido',
+                    text: 'O telefone deve conter 10 ou 11 dígitos (incluindo DDD).',
+                    confirmButtonColor: '#667eea'
+                });
+                phoneInput.classList.add('is-invalid');
+                return;
+            }
+            
+            // Confirmar cadastro
+            Swal.fire({
+                title: 'Confirmar cadastro',
+                text: 'Você tem certeza que deseja cadastrar este funcionário?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#667eea',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, cadastrar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mostrar loading no botão
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cadastrando...';
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('btn-loading');
+                    
+                    // Enviar formulário
+                    form.submit();
+                }
+            });
+        });
+        
+        // Remover classe is-invalid ao digitar
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+        });
+    });
+    
+    // Função original mantida para compatibilidade
+    function confirmarAtualizacao() {
+        Swal.fire({
+            title: 'Confirmar cadastro',
+            text: 'Você tem certeza que deseja continuar?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#667eea',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.querySelector('form').submit();
+            }
+        });
+        return false;
+    }
+</script>
+
+<!-- SweetAlert2 para alertas bonitos -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

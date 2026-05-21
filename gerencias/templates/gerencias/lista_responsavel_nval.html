@@ -1,69 +1,592 @@
-{% extends 'bases.html'%}
-    
-{% block page_title %}
-    LISTA DE RESPONSAVEIS
-{% endblock %}
-{% block container %}
-    {% csrf_token %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>DT CADASTRO</th>
-                <th>DT ATUALIZAÇÃO</th>
-                <th>NOME</th>
-                <th>CPF</th>
-                <th>END/COMP</th>
-                <th>BAIRRO</th>
-                <th>CIDADE/UF</th>
-                <th>RESP TRABALHA</th>
-                <th>CASADA(O)</th>
-                <th>CONJ TRABALHA</th>
-                <th>VALIDADO</th>
-                <th>EDITAR</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in dados %}
-                <tr>
-                    <td>{{ item.id_responsavel }}</td>
-                    <td>{{ item.data_cadastro|date:"d/m/Y H:i"|default:"—"}}</td>
-                    <td>{{ item.ultima_atualizacao|date:"d/m/Y H:i"|default:"—"}}</td>
-                    <td>{{ item.pnome }} {{ item.snome }}</td>
-                    <td>{{ item.cpf }}</td>
-                    <td>{{ item.endereco }} / {{ item.complemento }}</td>
-                    <td>{{ item.bairro }}</td>
-                    <td>{{ item.cidade }}/{{ item.estado }}</td>
-                    <td>{{ item.flag_responsavel_trabalha }}</td>
-                    <td>{{ item.flag_conjuge|default:"—" }}</td>
-                    <td>{{ item.flag_conjuge_trabalha|default:"—" }}</td>
-                    <td>{{ item.flag_validado|default:"—" }}</td>
-                    <td><a href="{% url 'edit_responsavel' id_responsavel=item.id_responsavel %}" class="btn btn-primary btn-sm">
-                            Editar
-                        </a>
-                    </td>
-                    <td><a href="{% url 'lista_filhos' id_responsavel=item.id_responsavel %}" class="btn btn-primary btn-sm">
-                            Filhos
-                        </a>
-                    </td>
-                    <td><a href="{% url 'reativar_responsavel' id_responsavel=item.id_responsavel %}" class="btn btn-primary btn-sm">
-                            Reativar
-                        </a>
-                    </td>      
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="7">Nenhum registro encontrado.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <script>
-        function confirmarAtualizacao() {
-            if (confirm('Tem certeza que deseja continuar?')) {
-                window.location.href = "{% url 'insere_novo_funcionario' %}";
-            }
-        }
-    </script>
+{% extends 'bases.html' %}
+{% load static %}
 
+{% block page_title %}
+    Responsáveis Inativos | Reativação - NAIRE
+{% endblock %}
+
+{% block container %}
+<div class="responsaveis-container">
+    <div class="container-fluid py-4">
+        <!-- Header da página -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="bi bi-people-fill text-warning"></i> 
+                            Responsáveis Inativos
+                        </h1>
+                        <p class="text-muted lead mb-0">
+                            Gerencie e reative responsáveis familiares que estão inativos no sistema
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'lista_responsavel' %}" class="btn btn-outline-success btn-lg shadow-sm">
+                            <i class="bi bi-person-check-fill"></i> 
+                            Ver Ativos
+                        </a>
+                    </div>
+                </div>
+                <hr class="my-3">
+            </div>
+        </div>
+
+        <!-- Filtros e busca -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-6">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0" 
+                           placeholder="Buscar responsável por nome, CPF ou cidade..." 
+                           id="searchInput">
+                    <button class="btn btn-warning" type="button" id="searchBtn">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select shadow-sm" id="filterValidado">
+                    <option value="todos">📋 Validação</option>
+                    <option value="S">✅ Validados</option>
+                    <option value="N">⏳ Pendentes</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select shadow-sm" id="filterTrabalha">
+                    <option value="todos">💼 Trabalho</option>
+                    <option value="S">✅ Trabalha</option>
+                    <option value="N">❌ Não trabalha</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Cards de estatísticas -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Total Inativos</h6>
+                                <h2 class="mb-0 fw-bold">{{ dados|length }}</h2>
+                            </div>
+                            <i class="bi bi-person-x fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Validados</h6>
+                                <h2 class="mb-0 fw-bold" id="totalValidados">0</h2>
+                            </div>
+                            <i class="bi bi-check2-circle fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-secondary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Cidades</h6>
+                                <h2 class="mb-0 fw-bold" id="totalCidades">0</h2>
+                            </div>
+                            <i class="bi bi-building fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Casados</h6>
+                                <h2 class="mb-0 fw-bold" id="totalCasados">0</h2>
+                            </div>
+                            <i class="bi bi-heart-fill fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela responsiva -->
+        <div class="table-responsive shadow-sm rounded-4">
+            <table class="table table-hover align-middle mb-0" id="responsaveisTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="px-4">#ID</th>
+                        <th scope="col">📅 CADASTRO</th>
+                        <th scope="col">👤 RESPONSÁVEL</th>
+                        <th scope="col">🆔 CPF</th>
+                        <th scope="col">📍 ENDEREÇO</th>
+                        <th scope="col">🏙️ CIDADE/UF</th>
+                        <th scope="col">💼 TRABALHA</th>
+                        <th scope="col">💑 CASADO</th>
+                        <th scope="col">✅ VALIDADO</th>
+                        <th scope="col" class="text-center">⚙️ AÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in dados %}
+                    <tr class="responsavel-row" 
+                        data-nome="{{ item.pnome }} {{ item.snome }}"
+                        data-cpf="{{ item.cpf }}"
+                        data-cidade="{{ item.cidade }}"
+                        data-validado="{{ item.flag_validado }}"
+                        data-trabalha="{{ item.flag_responsavel_trabalha }}">
+                        <td class="px-4 fw-bold text-muted">#{{ item.id_responsavel }}</td>
+                        <td>
+                            <small>
+                                <i class="bi bi-calendar3 text-muted"></i><br>
+                                {{ item.data_cadastro|date:"d/m/Y"|default:"—" }}
+                                <span class="text-muted">{{ item.data_cadastro|date:"H:i"|default:"" }}</span>
+                            </small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-warning me-3">
+                                    <span class="initials">{{ item.pnome|slice:":1" }}{{ item.snome|slice:":1" }}</span>
+                                </div>
+                                <div>
+                                    <strong>{{ item.pnome }} {{ item.snome }}</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock-history"></i> 
+                                        Atualizado: {{ item.ultima_atualizacao|date:"d/m/Y"|default:"—" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <code>{{ item.cpf|slice:":3" }}.{{ item.cpf|slice:"3:6" }}.{{ item.cpf|slice:"6:9" }}-{{ item.cpf|slice:"9:11" }}</code>
+                        </td>
+                        <td>
+                            <small>
+                                <i class="bi bi-geo-alt-fill text-muted"></i>
+                                {{ item.endereco }}{% if item.complemento %}, {{ item.complemento }}{% endif %}
+                                <br>
+                                <i class="bi bi-pin-map-fill text-muted"></i>
+                                {{ item.bairro }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-dark p-2">
+                                <i class="bi bi-building"></i> {{ item.cidade }}/{{ item.estado }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if item.flag_responsavel_trabalha == 'S' %}
+                                <span class="badge bg-success">✅ Sim</span>
+                            {% else %}
+                                <span class="badge bg-secondary">❌ Não</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.flag_conjuge == 'S' %}
+                                <span class="badge bg-primary">💑 Sim</span>
+                                {% if item.flag_conjuge_trabalha == 'S' %}
+                                    <br><small class="text-muted">(Cônjuge trabalha)</small>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">❌ Não</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.flag_validado == 'S' %}
+                                <span class="badge bg-success">✅ Validado</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">⏳ Pendente</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'edit_responsavel' id_responsavel=item.id_responsavel %}" 
+                                   class="btn btn-outline-primary btn-sm" 
+                                   data-bs-toggle="tooltip" 
+                                   title="Editar responsável">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a href="{% url 'lista_filhos' id_responsavel=item.id_responsavel %}" 
+                                   class="btn btn-outline-info btn-sm"
+                                   data-bs-toggle="tooltip" 
+                                   title="Ver filhos">
+                                    <i class="bi bi-people"></i> Filhos
+                                </a>
+                                <a href="{% url 'reativar_responsavel' id_responsavel=item.id_responsavel %}" 
+                                   class="btn btn-outline-success btn-sm reativar-btn"
+                                   data-bs-toggle="tooltip" 
+                                   title="Reativar responsável"
+                                   data-nome="{{ item.pnome }} {{ item.snome }}">
+                                    <i class="bi bi-arrow-repeat"></i> Reativar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center py-5">
+                            <i class="bi bi-emoji-smile display-1 text-muted"></i>
+                            <p class="mt-3 text-muted">Nenhum responsável inativo encontrado.</p>
+                            <a href="{% url 'lista_responsaveis_ativos' %}" class="btn btn-primary mt-2">
+                                <i class="bi bi-people-fill"></i> Ver responsáveis ativos
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer da tabela -->
+        <div class="row mt-4 align-items-center">
+            <div class="col-md-6">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-info-circle"></i> 
+                    Mostrando <strong id="visibleCount">{{ dados|length }}</strong> de <strong id="totalCount">{{ dados|length }}</strong> responsáveis inativos
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-outline-warning btn-sm" id="exportBtn">
+                    <i class="bi bi-download"></i> Exportar Lista
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos personalizados */
+    .responsaveis-container {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff5d9 100%);
+        min-height: calc(100vh - 56px);
+    }
+    
+    /* Gradientes para os cards */
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+    
+    .bg-gradient-secondary {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    }
+    
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+    
+    /* Avatar circular */
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .avatar-circle .initials {
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+    
+    /* Tabela */
+    .table {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #fff9e6;
+        transform: scale(1.01);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    /* Botões */
+    .btn-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        border: none;
+        color: white;
+    }
+    
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        color: white;
+    }
+    
+    .btn-group .btn {
+        transition: all 0.2s ease;
+        margin: 0 2px;
+    }
+    
+    .btn-group .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Animação de pulso para botão reativar */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(39, 174, 96, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(39, 174, 96, 0);
+        }
+    }
+    
+    .reativar-btn:hover {
+        animation: pulse 1s;
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .responsavel-row {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .btn-group .btn {
+            margin: 2px 0;
+        }
+        
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .avatar-circle .initials {
+            font-size: 12px;
+        }
+        
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .card-body h2 {
+            font-size: 1.5rem;
+        }
+    }
+    
+    /* Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #f39c12;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #e67e22;
+    }
+    
+    /* Badges */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+    }
+    
+    code {
+        font-size: 0.85rem;
+        color: #e67e22;
+        background: #fff9e6;
+        padding: 2px 6px;
+        border-radius: 6px;
+    }
+    
+    /* Input search */
+    .input-group-text {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+    
+    .btn-outline-success {
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-outline-success:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Formatação de CPF nos elementos existentes
+        document.querySelectorAll('code').forEach(el => {
+            let cpf = el.textContent.replace(/\D/g, '');
+            if (cpf.length === 11) {
+                el.textContent = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+        });
+        
+        // Calcular estatísticas
+        const rows = document.querySelectorAll('.responsavel-row');
+        let validados = 0;
+        let casados = 0;
+        const cidades = new Set();
+        
+        rows.forEach(row => {
+            const validado = row.getAttribute('data-validado');
+            const cidade = row.getAttribute('data-cidade');
+            const conjugue = row.querySelector('td:nth-child(8) .badge:first-child')?.textContent.includes('Sim');
+            
+            if (validado === 'S') validados++;
+            if (conjugue) casados++;
+            if (cidade) cidades.add(cidade);
+        });
+        
+        document.getElementById('totalValidados').textContent = validados;
+        document.getElementById('totalCasados').textContent = casados;
+        document.getElementById('totalCidades').textContent = cidades.size;
+        
+        // Funções de busca e filtro
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const filterValidado = document.getElementById('filterValidado');
+        const filterTrabalha = document.getElementById('filterTrabalha');
+        const table = document.getElementById('responsaveisTable');
+        const tableRows = table.querySelectorAll('.responsavel-row');
+        
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const validadoFilter = filterValidado.value;
+            const trabalhaFilter = filterTrabalha.value;
+            let visible = 0;
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const validado = row.getAttribute('data-validado');
+                const trabalha = row.getAttribute('data-trabalha');
+                
+                const matchesSearch = text.includes(searchTerm);
+                const matchesValidado = validadoFilter === 'todos' || validado === validadoFilter;
+                const matchesTrabalha = trabalhaFilter === 'todos' || trabalha === trabalhaFilter;
+                
+                if (matchesSearch && matchesValidado && matchesTrabalha) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('visibleCount').textContent = visible;
+        }
+        
+        searchInput.addEventListener('keyup', filterTable);
+        searchBtn.addEventListener('click', filterTable);
+        filterValidado.addEventListener('change', filterTable);
+        filterTrabalha.addEventListener('change', filterTable);
+        
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Confirmação antes de reativar
+        const reativarBtns = document.querySelectorAll('.reativar-btn');
+        reativarBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const nome = this.getAttribute('data-nome');
+                if (!confirm(`✅ Tem certeza que deseja REATIVAR o responsável ${nome}?\n\nEle voltará a ter acesso ao sistema normalmente.`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        // Exportar lista
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const visibleRows = document.querySelectorAll('.responsavel-row:visible');
+            let csvContent = "ID,Nome,CPF,Cidade,UF,Validado,Trabalha,Casado,Data Cadastro\n";
+            
+            visibleRows.forEach(row => {
+                const id = row.cells[0]?.textContent.replace('#', '') || '';
+                const nome = row.cells[2]?.querySelector('strong')?.textContent || '';
+                const cpf = row.cells[3]?.textContent.replace(/\./g, '').replace(/-/g, '') || '';
+                const cidade = row.getAttribute('data-cidade') || '';
+                const uf = row.cells[5]?.textContent.split('/')[1] || '';
+                const validado = row.cells[8]?.textContent.includes('Validado') ? 'Sim' : 'Não';
+                const trabalha = row.cells[6]?.textContent.includes('Sim') ? 'Sim' : 'Não';
+                const casado = row.cells[7]?.textContent.includes('Sim') ? 'Sim' : 'Não';
+                const dataCadastro = row.cells[1]?.textContent.trim() || '';
+                
+                csvContent += `${id},"${nome}",${cpf},"${cidade}",${uf},${validado},${trabalha},${casado},"${dataCadastro}"\n`;
+            });
+            
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'responsaveis_inativos.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Lista exportada com sucesso!');
+        });
+    });
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

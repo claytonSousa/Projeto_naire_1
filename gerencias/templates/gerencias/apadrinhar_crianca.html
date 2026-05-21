@@ -1,72 +1,483 @@
-{% extends 'bases.html'%}
-    
-{% block page_title %}
-    LISTA MADRINHAS E PADRINHOS
-{% endblock %}
-{% block container %}
-    {% csrf_token %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>CPF</th>
-                <th>Nome</th>
-                <th>Cidade/UF</th>
-                <th>Ativo</th>
-                <th>Data Cadastro</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ registro.id_mad_pad }}</td>
-                <td>{{ registro.cpf|default:"—" }}</td>
-                <td>{{ registro.pnome }} {{ registro.snome }}</td>
-                <td>{{ registro.cidade|default:"—" }}/{{ registro.estado|default:"—" }}</td>
-                <td>{{ registro.flag_ativo }}</td>
-                <td>{{ registro.data_cadastro|date:"d/m/Y H:i"|default:"—" }}</td> 
-            </tr>
-        </tbody>
-    </table>
-    <br><br><br><br>
-    <h2>LISTA DE CRIANÇAS</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">ID RESP</th>
-                <th scope="col">NOME</th>
-                <th scope="col">DT NASC</th>
-                <th scope="col">SEXO</th>
-                <th scope="col">ROUPA</th>
-                <th scope="col">SAPATO</th>
-                <th scope="col">OUT. ONG</th>
-                <th scope="col">VINCULAR</th> 
-            </tr>
-        </thead>
-        
-        <tbody>
-            {% for filho in criancas %}
-            <tr>
-                <td>{{ filho.id_filho }}</td>
-                <td>{{ id_responsavel }}</td>
-                <td>{{ filho.pnome }} {{ filho.snome }}</td>
-                <td>{{ filho.data_nascimento }}</td>
-                <td>{{ filho.sexo }}</td>
-                <td>{{ filho.numero_roupa }}</td>
-                <td>{{ filho.numero_sapato }}</td>
-                <td>{{ filho.cadastro_outra_ong }}</td>
-                <td>
-                    <a href="{% url 'vincular_mad_pad_crianca' %}?id_mad_pad={{ registro.id_mad_pad }}&id_filho={{ filho.id_filho }}" class="btn btn-success btn-sm" method="POST">
-                        APADRINHAR
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="11">Nenhum registro encontrado.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends 'bases.html' %}
+{% load static %}
 
+{% block page_title %}
+    Vincular Apadrinhamento | NAIRE
+{% endblock %}
+
+{% block container %}
+<div class="vincular-container">
+    <div class="container-fluid py-4">
+        <!-- Header da página -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'lista_madrinha_padrinho' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="bi bi-gift-fill text-primary"></i> 
+                            Vincular Apadrinhamento
+                        </h1>
+                        <p class="text-muted lead mb-0">
+                            Selecione uma criança para apadrinhar
+                        </p>
+                    </div>
+                </div>
+                <hr class="my-3">
+            </div>
+        </div>
+
+        <!-- Card do Padrinho/Madrinha -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm border-0 rounded-4 bg-gradient-primary text-white">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                            <div class="icon-circle bg-white text-primary">
+                                <i class="bi bi-person-heart fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 opacity-75">Apadrinhador selecionado</h5>
+                                <h3 class="mb-0 fw-bold">{{ registro.pnome }} {{ registro.snome }}</h3>
+                                <p class="mb-0 opacity-75 mt-1">
+                                    <i class="bi bi-geo-alt-fill"></i> {{ registro.cidade|default:"—" }}/{{ registro.estado|default:"—" }}
+                                    {% if registro.cpf %} | <i class="bi bi-credit-card"></i> CPF: {{ registro.cpf }}{% endif %}
+                                </p>
+                            </div>
+                            <div class="ms-auto">
+                                <span class="badge bg-light text-dark px-3 py-2">
+                                    <i class="bi bi-person-badge"></i> ID: #{{ registro.id_mad_pad }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Crianças -->
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-gradient-success text-white p-3 px-4 border-0">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <i class="bi bi-people-fill me-2"></i>
+                        <strong>Crianças disponíveis para apadrinhamento</strong>
+                    </div>
+                    <span class="badge bg-light text-dark px-3 py-2">
+                        <i class="bi bi-person-arms-up"></i> {{ criancas|length }} criança(s)
+                    </span>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                {% if criancas %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="criancasTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4">#ID</th>
+                                    <th>👤 NOME</th>
+                                    <th>🎂 DT NASC</th>
+                                    <th>⚧ SEXO</th>
+                                    <th>👕 ROUPA</th>
+                                    <th>👞 SAPATO</th>
+                                    <th>🏢 OUT. ONG</th>
+                                    <th class="text-center">⚙️ AÇÃO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for filho in criancas %}
+                                <tr class="crianca-row" data-id="{{ filho.id_filho }}">
+                                    <td class="px-4 fw-bold">#{{ filho.id_filho }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle-sm me-3">
+                                                <span class="initials">{{ filho.pnome|slice:":1" }}{{ filho.snome|slice:":1" }}</span>
+                                            </div>
+                                            <div>
+                                                <strong>{{ filho.pnome }} {{ filho.snome }}</strong>
+                                                <br>
+                                                <small class="text-muted">ID Resp: #{{ id_responsavel|default:filho.id_responsavel }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-calendar3 text-muted"></i>
+                                        {{ filho.data_nascimento|date:"d/m/Y"|default:"—" }}
+                                        <br>
+                                        <small class="text-muted" id="idade-{{ filho.id_filho }}"></small>
+                                    </td>
+                                    <td>
+                                        {% if filho.sexo == 'M' %}
+                                            <span class="badge bg-primary">👨 Masculino</span>
+                                        {% elif filho.sexo == 'F' %}
+                                            <span class="badge bg-danger">👩 Feminino</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">🌱 Outro</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info bg-opacity-10 text-dark p-2">
+                                            <i class="bi bi-person-standing"></i> {{ filho.numero_roupa|default:"—" }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info bg-opacity-10 text-dark p-2">
+                                            <i class="bi bi-shoe-print"></i> {{ filho.numero_sapato|default:"—" }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if filho.cadastro_outra_ong == 'S' or filho.cadastro_outra_ong == 'Sim' %}
+                                            <span class="badge bg-warning text-dark">⚠️ Sim</span>
+                                        {% else %}
+                                            <span class="badge bg-success">✅ Não</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <a href="{% url 'vincular_mad_pad_crianca' %}?id_mad_pad={{ registro.id_mad_pad }}&id_filho={{ filho.id_filho }}" 
+                                               class="btn btn-success btn-sm vincular-btn"
+                                               data-bs-toggle="tooltip" 
+                                               title="Vincular apadrinhamento"
+                                               data-crianca="{{ filho.pnome }} {{ filho.snome }}"
+                                               data-padrinho="{{ registro.pnome }} {{ registro.snome }}">
+                                                <i class="bi bi-gift-fill"></i> Apadrinhar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Footer com informações -->
+                    <div class="p-3 bg-light border-top">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> 
+                                Mostrando <strong>{{ criancas|length }}</strong> crianças disponíveis
+                            </small>
+                            <div class="input-group w-auto">
+                                <input type="text" class="form-control form-control-sm" placeholder="Buscar criança..." id="searchCrianca">
+                                <button class="btn btn-outline-primary btn-sm" type="button" id="searchCriancaBtn">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-emoji-frown display-1 text-muted"></i>
+                        <p class="mt-3 text-muted">Nenhuma criança disponível para apadrinhamento.</p>
+                        <a href="{% url 'cadastro_familia' %}" class="btn btn-primary mt-2">
+                            <i class="bi bi-person-plus-fill"></i> Cadastrar família primeiro
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos personalizados */
+    .vincular-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: calc(100vh - 56px);
+    }
+    
+    /* Gradientes */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+    
+    /* Ícone circular */
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .icon-circle i {
+        color: #667eea;
+    }
+    
+    /* Avatares */
+    .avatar-circle-sm {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .avatar-circle-sm .initials {
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    
+    /* Tabela */
+    .table {
+        background: white;
+    }
+    
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    /* Botões */
+    .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        border: none;
+        transition: transform 0.2s ease;
+    }
+    
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    }
+    
+    /* Badges */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+    }
+    
+    .bg-opacity-10 {
+        background-color: rgba(0,0,0,0.1);
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 1rem !important;
+        }
+        
+        .icon-circle {
+            width: 45px;
+            height: 45px;
+        }
+        
+        .icon-circle i {
+            font-size: 1.5rem !important;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+        }
+        
+        .avatar-circle-sm {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .avatar-circle-sm .initials {
+            font-size: 11px;
+        }
+        
+        .table-responsive {
+            font-size: 0.85rem;
+        }
+        
+        .btn-sm {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+    }
+    
+    /* Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #667eea;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #764ba2;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para calcular idade
+        function calcularIdade(dataNascimento) {
+            if (!dataNascimento) return null;
+            const hoje = new Date();
+            const nascimento = new Date(dataNascimento);
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mes = hoje.getMonth() - nascimento.getMonth();
+            if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+                idade--;
+            }
+            return idade;
+        }
+        
+        // Calcular e exibir idade para cada criança
+        document.querySelectorAll('.crianca-row').forEach(row => {
+            const dataNascText = row.cells[2]?.childNodes[0]?.textContent.trim() || '';
+            if (dataNascText && dataNascText !== '—') {
+                const parts = dataNascText.split('/');
+                if (parts.length === 3) {
+                    const dataNasc = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const idade = calcularIdade(dataNasc);
+                    const idadeSpan = row.querySelector(`td:nth-child(3) small`);
+                    if (idadeSpan && idade !== null && idade >= 0) {
+                        idadeSpan.textContent = `${idade} ${idade === 1 ? 'ano' : 'anos'}`;
+                    }
+                }
+            }
+        });
+        
+        // Busca na tabela de crianças
+        const searchInput = document.getElementById('searchCrianca');
+        const searchBtn = document.getElementById('searchCriancaBtn');
+        const table = document.getElementById('criancasTable');
+        
+        if (searchInput && table) {
+            function filterTable() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const rows = table.querySelectorAll('tbody tr');
+                let visible = 0;
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                        visible++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+            
+            searchInput.addEventListener('keyup', filterTable);
+            if (searchBtn) searchBtn.addEventListener('click', filterTable);
+        }
+        
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Confirmação antes de vincular
+        const vincularBtns = document.querySelectorAll('.vincular-btn');
+        vincularBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const crianca = this.getAttribute('data-crianca');
+                const padrinho = this.getAttribute('data-padrinho');
+                const url = this.getAttribute('href');
+                
+                Swal.fire({
+                    title: 'Confirmar Apadrinhamento',
+                    html: `
+                        <div class="text-center">
+                            <i class="bi bi-gift-fill" style="font-size: 48px; color: #27ae60;"></i>
+                            <p class="mt-3">
+                                <strong>${padrinho}</strong> irá apadrinhar<br>
+                                <strong>${crianca}</strong>
+                            </p>
+                            <p class="text-muted small mt-2">
+                                Deseja confirmar este apadrinhamento?
+                            </p>
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#27ae60',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '✅ Sim, apadrinhar',
+                    cancelButtonText: '❌ Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mostrar loading
+                        Swal.fire({
+                            title: 'Processando...',
+                            text: 'Estamos vinculando o apadrinhamento.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        
+                        // Redirecionar para a URL
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+        
+        // Formatar CPF se existir
+        const cpfElement = document.querySelector('.bg-gradient-primary .badge');
+        if (cpfElement) {
+            let cpfText = cpfElement.textContent;
+            const cpfMatch = cpfText.match(/\d{11}/);
+            if (cpfMatch) {
+                const cpf = cpfMatch[0];
+                const cpfFormatado = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                cpfElement.innerHTML = cpfElement.innerHTML.replace(cpf, cpfFormatado);
+            }
+        }
+    });
+</script>
+
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}
