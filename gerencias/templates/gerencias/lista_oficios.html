@@ -1,36 +1,637 @@
-{% extends 'bases.html'%}
-    
-{% block page_title %}
-    LISTA OFICIOS
-{% endblock %}
-{% block container %}
-    {% csrf_token %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">CRIADO EM</th>
-                <th scope="col">CRIADOR</th>
-                <th scope="col">DESTINATARIO</th>
-                <th scope="col">MENSAGEM</th>  
-            </tr>
-        </thead>
-        <tbody>
-            {% for oficio in lista %}
-                <tr>
-                    <td>{{ oficio.id_oficio }}</td>
-                    <td>{{ oficio.data_criacao|date:"d/m/Y H:i" }}</td>
-                    <td>{{ oficio.id_usuario.username }}</td>
-                    <td>{{ oficio.destinatario }}</td>
-                    <td>{{ oficio.mensagem|truncatechars:100 }}</td>
-                </tr>
-            
-        </tbody>
-        {% empty %}
-        <tr>
-            <td colspan="7">Nenhum registro encontrado.</td>
-        </tr>
-        {% endfor %}
-    </table>
+{% extends 'bases.html' %}
+{% load static %}
 
+{% block page_title %}
+    Lista de Ofícios | NAIRE
+{% endblock %}
+
+{% block container %}
+<div class="oficios-container">
+    <div class="container-fluid py-4">
+        <!-- Header da página -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="bi bi-envelope-paper-fill text-primary"></i> 
+                            Ofícios
+                        </h1>
+                        <p class="text-muted lead mb-0">
+                            Gerencie todas as correspondências oficiais da ONG NAIRE
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{% url 'novo_oficio' %}" class="btn btn-success btn-lg shadow-sm">
+                            <i class="bi bi-plus-circle-fill"></i> 
+                            Novo Ofício
+                        </a>
+                    </div>
+                </div>
+                <hr class="my-3">
+            </div>
+        </div>
+
+        <!-- Filtros e busca -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-6">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control border-start-0" 
+                           placeholder="Buscar por remetente, destinatário ou mensagem..." 
+                           id="searchInput">
+                    <button class="btn btn-primary" type="button" id="searchBtn">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select shadow-sm" id="filterAno">
+                    <option value="todos">📅 Todos os anos</option>
+                    <!-- Anos serão preenchidos via JavaScript -->
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select shadow-sm" id="filterCriador">
+                    <option value="todos">👤 Todos os criadores</option>
+                    <!-- Criadores serão preenchidos via JavaScript -->
+                </select>
+            </div>
+        </div>
+
+        <!-- Cards de estatísticas -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Total de Ofícios</h6>
+                                <h2 class="mb-0 fw-bold">{{ lista|length }}</h2>
+                            </div>
+                            <i class="bi bi-envelope-paper fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Este Mês</h6>
+                                <h2 class="mb-0 fw-bold" id="totalMes">0</h2>
+                            </div>
+                            <i class="bi bi-calendar-month fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Destinatários</h6>
+                                <h2 class="mb-0 fw-bold" id="totalDestinatarios">0</h2>
+                            </div>
+                            <i class="bi bi-person-badge fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm bg-gradient-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1 opacity-75">Remetentes</h6>
+                                <h2 class="mb-0 fw-bold" id="totalRemetentes">0</h2>
+                            </div>
+                            <i class="bi bi-person-fill fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela responsiva -->
+        <div class="table-responsive shadow-sm rounded-4">
+            <table class="table table-hover align-middle mb-0" id="oficiosTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" class="px-4">#ID</th>
+                        <th scope="col">📅 CRIADO EM</th>
+                        <th scope="col">✍️ CRIADOR</th>
+                        <th scope="col">📨 REMETENTE</th>
+                        <th scope="col">🎯 DESTINATÁRIO</th>
+                        <th scope="col">📝 MENSAGEM</th>
+                        <th scope="col" class="text-center">⚙️ AÇÕES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for oficio in lista %}
+                    <tr class="oficio-row" 
+                        data-data="{{ oficio.data_criacao|date:'Y-m-d' }}"
+                        data-criador="{{ oficio.id_usuario.username }}"
+                        data-remetente="{{ oficio.remetente }}"
+                        data-destinatario="{{ oficio.destinatario }}">
+                        <td class="px-4 fw-bold">#{{ oficio.id_oficio }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3">
+                                    <i class="bi bi-envelope-paper-fill text-white"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ oficio.data_criacao|date:"d/m/Y" }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ oficio.data_criacao|date:"H:i" }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle-sm me-3">
+                                    <span class="initials">{{ oficio.id_usuario.username|slice:":1"|upper }}</span>
+                                </div>
+                                <div>
+                                    <strong>{{ oficio.id_usuario.username }}</strong>
+                                    <br>
+                                    <small class="text-muted">ID: #{{ oficio.id_usuario.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-10 text-dark p-2">
+                                <i class="bi bi-send-fill"></i> {{ oficio.remetente|default:"—" }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success bg-opacity-10 text-dark p-2">
+                                <i class="bi bi-person-check-fill"></i> {{ oficio.destinatario|default:"—" }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="mensagem-preview">
+                                <i class="bi bi-chat-quote-fill text-muted"></i>
+                                {{ oficio.mensagem|truncatechars:100 }}
+                                {% if oficio.mensagem|length > 100 %}
+                                    <button class="btn btn-link btn-sm p-0 ms-1 ver-mais" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modalMensagem"
+                                            data-mensagem="{{ oficio.mensagem|escapejs }}"
+                                            data-id="#{{ oficio.id_oficio }}">
+                                        ver mais
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="#" 
+                                   class="btn btn-outline-info btn-sm" 
+                                   data-bs-toggle="tooltip" 
+                                   title="Visualizar ofício completo">
+                                    <i class="bi bi-eye-fill"></i> Ver
+                                </a>
+                                <a href="{% url 'excluir_oficio' id_oficio=oficio.id_oficio %}" 
+                                   class="btn btn-outline-danger btn-sm excluir-btn"
+                                   data-bs-toggle="tooltip" 
+                                   title="Excluir ofício"
+                                   data-id="#{{ oficio.id_oficio }}"
+                                   data-destinatario="{{ oficio.destinatario }}">
+                                    <i class="bi bi-trash-fill"></i> Excluir
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <p class="mt-3 text-muted">Nenhum ofício cadastrado ainda.</p>
+                            <a href="{% url 'novo_oficio' %}" class="btn btn-primary mt-2">
+                                <i class="bi bi-plus-circle-fill"></i> Criar primeiro ofício
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer da tabela com informações -->
+        <div class="row mt-4 align-items-center">
+            <div class="col-md-6">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-info-circle"></i> 
+                    Mostrando <strong id="visibleCount">{{ lista|length }}</strong> de <strong id="totalCount">{{ lista|length }}</strong> ofícios
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-outline-primary btn-sm" id="exportBtn">
+                    <i class="bi bi-download"></i> Exportar Lista
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para visualizar mensagem completa -->
+<div class="modal fade" id="modalMensagem" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+            <div class="modal-header bg-gradient-primary text-white border-0">
+                <h5 class="modal-title">
+                    <i class="bi bi-chat-text-fill"></i> Mensagem Completa
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p id="modalMensagemTexto" class="mb-0"></p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos personalizados */
+    .oficios-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: calc(100vh - 56px);
+    }
+    
+    /* Gradientes para os cards */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+    
+    .bg-gradient-warning {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    }
+    
+    /* Avatar circular */
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .avatar-circle-sm {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    
+    .avatar-circle-sm .initials {
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    
+    /* Tabela */
+    .table {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Botões */
+    .btn-group .btn {
+        transition: all 0.2s ease;
+        margin: 0 2px;
+    }
+    
+    .btn-group .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        border: none;
+        transition: transform 0.2s ease;
+    }
+    
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    }
+    
+    /* Mensagem preview */
+    .mensagem-preview {
+        max-width: 300px;
+        font-size: 0.9rem;
+        color: #555;
+        line-height: 1.4;
+    }
+    
+    .ver-mais {
+        font-size: 0.75rem;
+        text-decoration: none;
+    }
+    
+    .ver-mais:hover {
+        text-decoration: underline;
+    }
+    
+    /* Badges */
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.4em 0.8em;
+    }
+    
+    .bg-opacity-10 {
+        background-color: rgba(0,0,0,0.05);
+    }
+    
+    /* Animações */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .oficio-row {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .btn-group .btn {
+            margin: 2px 0;
+        }
+        
+        .avatar-circle, .avatar-circle-sm {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .avatar-circle-sm .initials {
+            font-size: 11px;
+        }
+        
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .card-body h2 {
+            font-size: 1.5rem;
+        }
+        
+        .mensagem-preview {
+            max-width: 200px;
+            font-size: 0.8rem;
+        }
+    }
+    
+    /* Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #3498db;
+        border-radius: 10px;
+    }
+    
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #2980b9;
+    }
+    
+    /* Modal */
+    .modal-content {
+        border: none;
+    }
+    
+    .modal-header {
+        border-radius: 16px 16px 0 0;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calcular estatísticas
+        const rows = document.querySelectorAll('.oficio-row');
+        const dataAtual = new Date();
+        const mesAtual = dataAtual.getMonth();
+        const anoAtual = dataAtual.getFullYear();
+        
+        let totalMes = 0;
+        const destinatarios = new Set();
+        const remetentes = new Set();
+        const anos = new Set();
+        const criadores = new Set();
+        
+        rows.forEach(row => {
+            const dataStr = row.getAttribute('data-data');
+            const destinatario = row.getAttribute('data-destinatario');
+            const remetente = row.getAttribute('data-remetente');
+            const criador = row.getAttribute('data-criador');
+            
+            if (dataStr) {
+                const data = new Date(dataStr);
+                if (data.getMonth() === mesAtual && data.getFullYear() === anoAtual) {
+                    totalMes++;
+                }
+                anos.add(data.getFullYear());
+            }
+            
+            if (destinatario) destinatarios.add(destinatario);
+            if (remetente) remetentes.add(remetente);
+            if (criador) criadores.add(criador);
+        });
+        
+        document.getElementById('totalMes').textContent = totalMes;
+        document.getElementById('totalDestinatarios').textContent = destinatarios.size;
+        document.getElementById('totalRemetentes').textContent = remetentes.size;
+        
+        // Preencher filtro de anos
+        const anoFilter = document.getElementById('filterAno');
+        const anosOrdenados = Array.from(anos).sort((a, b) => b - a);
+        anosOrdenados.forEach(ano => {
+            const option = document.createElement('option');
+            option.value = ano;
+            option.textContent = ano;
+            anoFilter.appendChild(option);
+        });
+        
+        // Preencher filtro de criadores
+        const criadorFilter = document.getElementById('filterCriador');
+        const criadoresOrdenados = Array.from(criadores).sort();
+        criadoresOrdenados.forEach(criador => {
+            const option = document.createElement('option');
+            option.value = criador;
+            option.textContent = criador;
+            criadorFilter.appendChild(option);
+        });
+        
+        // Funções de busca e filtro
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const filterAno = document.getElementById('filterAno');
+        const filterCriador = document.getElementById('filterCriador');
+        const table = document.getElementById('oficiosTable');
+        const tableRows = table.querySelectorAll('.oficio-row');
+        
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const anoFilter = filterAno.value;
+            const criadorFilter = filterCriador.value;
+            let visible = 0;
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const dataAno = row.getAttribute('data-data')?.split('-')[0] || '';
+                const criador = row.getAttribute('data-criador') || '';
+                
+                const matchesSearch = text.includes(searchTerm);
+                const matchesAno = anoFilter === 'todos' || dataAno === anoFilter;
+                const matchesCriador = criadorFilter === 'todos' || criador === criadorFilter;
+                
+                if (matchesSearch && matchesAno && matchesCriador) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('visibleCount').textContent = visible;
+        }
+        
+        searchInput.addEventListener('keyup', filterTable);
+        searchBtn.addEventListener('click', filterTable);
+        filterAno.addEventListener('change', filterTable);
+        filterCriador.addEventListener('change', filterTable);
+        
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Modal para mensagem completa
+        const modalMensagem = document.getElementById('modalMensagem');
+        if (modalMensagem) {
+            modalMensagem.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const mensagem = button.getAttribute('data-mensagem');
+                const id = button.getAttribute('data-id');
+                
+                const modalBody = modalMensagem.querySelector('#modalMensagemTexto');
+                if (modalBody) {
+                    modalBody.textContent = mensagem;
+                }
+                
+                const modalTitle = modalMensagem.querySelector('.modal-title');
+                if (modalTitle && id) {
+                    modalTitle.innerHTML = `<i class="bi bi-chat-text-fill"></i> Mensagem do Ofício ${id}`;
+                }
+            });
+        }
+        
+        // Confirmação antes de excluir
+        const excluirBtns = document.querySelectorAll('.excluir-btn');
+        excluirBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const id = this.getAttribute('data-id');
+                const destinatario = this.getAttribute('data-destinatario');
+                if (!confirm(`⚠️ Tem certeza que deseja excluir o ofício ${id} (para ${destinatario})?\n\nEsta ação não pode ser desfeita.`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        // Exportar lista
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const visibleRows = document.querySelectorAll('.oficio-row:visible');
+            let csvContent = "ID,Data Criação,Criador,Remetente,Destinatário,Mensagem\n";
+            
+            visibleRows.forEach(row => {
+                const id = row.cells[0]?.textContent.replace('#', '') || '';
+                const dataHora = row.cells[1]?.querySelector('strong')?.textContent || '';
+                const hora = row.cells[1]?.querySelector('small')?.textContent || '';
+                const criador = row.cells[2]?.querySelector('strong')?.textContent || '';
+                const remetente = row.cells[3]?.textContent.replace('📨', '').trim() || '';
+                const destinatario = row.cells[4]?.textContent.replace('🎯', '').trim() || '';
+                const mensagem = row.cells[5]?.querySelector('.mensagem-preview')?.textContent.replace('ver mais', '').trim() || '';
+                
+                csvContent += `${id},"${dataHora} ${hora}","${criador}","${remetente}","${destinatario}","${mensagem}"\n`;
+            });
+            
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.href = url;
+            link.setAttribute('download', 'oficios.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Lista exportada com sucesso!');
+        });
+    });
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

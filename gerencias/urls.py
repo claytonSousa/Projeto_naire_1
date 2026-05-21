@@ -39,7 +39,7 @@ urlpatterns = [
     path('gerencias/novo_oficio/', views.novo_oficio, name='novo_oficio'),
     path('gerencias/lista_oficio/', views.lista_oficio, name='lista_oficio'),
     path('gerencias/insere_novo_oficio/', views.insere_novo_oficio, name='insere_novo_oficio'),
-    path('gerencias/exclui_oficio/<int:id_oficio>', views.exclui_oficio, name='exclui_oficio'),
+    path('gerencias/excluir_oficio/<int:id_oficio>', views.excluir_oficio, name='excluir_oficio'),
 
 
     path('gerencias/novo_madrinha_padrinho/', views.novo_madrinha_padrinho, name='novo_madrinha_padrinho'),

@@ -452,7 +452,7 @@ def lista_oficio(request):
     return render(request, 'gerencias/lista_oficios.html', contexto)
 
 @login_required
-def exclui_oficio(request,id_oficio):
+def excluir_oficio(request,id_oficio):
     registro = TbOficios.objects.filter(id_oficio=id_oficio)
     registro.delete()
     return render(request,'lista_oficio')
