@@ -210,24 +210,12 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'edit_responsavel' id_responsavel=item.id_responsavel %}" 
-                                   class="btn btn-outline-primary btn-sm" 
-                                   data-bs-toggle="tooltip" 
-                                   title="Editar responsável">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <a href="{% url 'lista_filhos' id_responsavel=item.id_responsavel %}" 
-                                   class="btn btn-outline-info btn-sm"
-                                   data-bs-toggle="tooltip" 
-                                   title="Ver filhos">
-                                    <i class="bi bi-people"></i> Filhos
-                                </a>
-                                <a href="{% url 'valida_responsavel' id_responsavel=item.id_responsavel %}" 
+                                <a href="{% url 'reativar_responsavel' id_responsavel=item.id_responsavel %}" 
                                    class="btn btn-outline-success btn-sm reativar-btn"
                                    data-bs-toggle="tooltip" 
-                                   title="Validar responsável"
+                                   title="Reativar responsável"
                                    data-nome="{{ item.pnome }} {{ item.snome }}">
-                                    <i class="bi bi-arrow-repeat"></i> Validar
+                                    <i class="bi bi-arrow-repeat"></i> Reativar
                                 </a>
                             </div>
                         </td>
@@ -237,9 +225,6 @@
                         <td colspan="10" class="text-center py-5">
                             <i class="bi bi-emoji-smile display-1 text-muted"></i>
                             <p class="mt-3 text-muted">Nenhum responsável inativo encontrado.</p>
-                            <a href="{% url 'lista_responsavel' %}" class="btn btn-primary mt-2">
-                                <i class="bi bi-people-fill"></i> Ver responsáveis ativos
-                            </a>
                         </td>
                     </tr>
                     {% endfor %}

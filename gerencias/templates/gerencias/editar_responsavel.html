@@ -85,8 +85,8 @@
                                     <label class="form-label fw-semibold">
                                         <i class="bi bi-calendar-date"></i> Data de Nascimento *
                                     </label>
-                                    <input type="date" name="dt_nasc" class="form-control form-control-lg shadow-sm" 
-                                           value="{{ item.data_nascimento|date:'Y-m-d' }}" required>
+                                    <input type="text" placeholder="{{ item.data_nascimento }}" name="dt_nasc" class="form-control form-control-lg shadow-sm" 
+                                           value="{{ item.data_nascimento|date }}" required>
                                 </div>
                             </div>
 

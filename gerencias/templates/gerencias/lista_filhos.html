@@ -196,7 +196,7 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'desativar_filho' id_filho=filho.id_filho %}" 
+                                <a href="{% url 'desativar_filho' id_filho=filho.id_filho&id_responsavel=filho.id_responsavel %}" 
                                    class="btn btn-outline-danger btn-sm desativar-btn"
                                    data-bs-toggle="tooltip" 
                                    title="Desativar filho"

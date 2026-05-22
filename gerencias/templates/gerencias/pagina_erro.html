@@ -1,0 +1,16 @@
+{% extends 'bases.html' %}
+{% load static %}
+
+{% block page_title %}
+    ERRO | NAIRE
+{% endblock %}
+
+{% block container %}
+    <div class="container mt-5">
+        <div class="text-center">
+            <h1 class="display-4">Ops! Algo deu errado.</h1>
+            <p class="lead">{{ mensagem }}</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">Voltar para a Página Inicial</a>
+        </div>
+    </div>
+{% endblock %}

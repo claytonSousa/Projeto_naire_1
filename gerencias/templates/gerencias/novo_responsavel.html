@@ -497,27 +497,6 @@
                 return;
             }
             
-            // Validar data de nascimento (maior de 18 anos)
-            const dtNasc = document.querySelector('input[name="dt_nasc"]').value;
-            if (dtNasc) {
-                const dataNasc = new Date(dtNasc);
-                const hoje = new Date();
-                let idade = hoje.getFullYear() - dataNasc.getFullYear();
-                const mes = hoje.getMonth() - dataNasc.getMonth();
-                if (mes < 0 || (mes === 0 && hoje.getDate() < dataNasc.getDate())) {
-                    idade--;
-                }
-                
-                if (idade < 18) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Idade mínima',
-                        text: 'O responsável familiar deve ter pelo menos 18 anos.',
-                        confirmButtonColor: '#1abc9c'
-                    });
-                    return;
-                }
-            }
             
             // Confirmar cadastro
             Swal.fire({

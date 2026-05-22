@@ -47,10 +47,15 @@ class Apad:
 def home(request):
     return render(request,'gerencias/index.html')
 
+def pagina_erro(request, mensagem):
+    contexto = {'mensagem': mensagem}
+    return render(request, 'gerencias/pagina_erro.html', contexto)
+
 @login_required
 def lista_funcionarios(request): 
     lista = Conn.executa_query(
-        f"SELECT * FROM tb_funcionario WHERE  flag_ativo = 'S'")  
+        f"SELECT * FROM tb_funcionario WHERE  flag_ativo = 'S'")
+
     return render(request, 'gerencias/lista_funcionarios.html', { 'lista': lista })
 
 @login_required   
@@ -59,46 +64,58 @@ def novo_funcionario(request):
 
 @login_required
 def insere_novo_funcionario(request):
-    tp_m = request.POST.get('tp_funcionario')
-    pnome = request.POST.get('pnome')
-    snome = request.POST.get('snome')
-    cpf = request.POST.get('cpf')
-    telefone = request.POST.get('telefone')
-    rua = request.POST.get('rua')
-    numero = request.POST.get('numero')
-    rua_n = rua + " - " + str(numero)
-    comp = request.POST.get('comp')
-    bairro = request.POST.get('bairro')
-    cidade = request.POST.get('cidade')
-    estado = request.POST.get('estado')
-    flag = request.POST.get('flag')
-    sql1 = "INSERT INTO tb_funcionario (id_tipo,pnome,snome, cpf,telefone,endereco,complemento,bairro,cidade,estado,flag_ativo)"
-    sql2 = f"VALUES({ escapar(tp_m) }, {escapar(pnome)}, {escapar(snome)}, {escapar(cpf)}, {escapar(telefone)}, {escapar(rua_n)}, {escapar(comp)}, {escapar(bairro)}, {escapar(cidade)}, {escapar(estado)}, {escapar(flag)})"    
-    result = Conn.executa_insert(sql1+sql2)
-    if result :
+    if request.method == 'POST':
+        tp_m = request.POST.get('tp_funcionario')
+        pnome = request.POST.get('pnome')
+        snome = request.POST.get('snome')
+        cpf = request.POST.get('cpf')
+        cpf = cpf.replace('.', '').replace('-', '')  # Remove máscara do CPF
+        telefone = request.POST.get('telefone')
+        telefone = telefone.replace('(', '').replace(')', '').replace('-', '').replace(' ', '')  # Remove máscara do telefone
+        rua = request.POST.get('rua')
+        numero = request.POST.get('numero')
+        rua_n = rua + " - " + str(numero)
+        comp = request.POST.get('comp')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        estado = request.POST.get('estado')
+        flag = request.POST.get('flag')
+        sql1 = "INSERT INTO tb_funcionario (id_tipo,pnome,snome, cpf,telefone,endereco,complemento,bairro,cidade,estado,flag_ativo)"
+        sql2 = f"VALUES({ escapar(tp_m) }, {escapar(pnome)}, {escapar(snome)}, {escapar(cpf)}, {escapar(telefone)}, {escapar(rua_n)}, {escapar(comp)}, {escapar(bairro)}, {escapar(cidade)}, {escapar(estado)}, {escapar(flag)})"    
+        result = Conn.executa_insert(sql1+sql2)
+        if result :
+            func = Conn.executa_query(
+            f"SELECT * FROM tb_funcionario WHERE id_funcionario={ escapar(result) }")      
+            return render(request,'gerencias/lista_funcionarios.html',{ 'lista': func })
+        else :
+            return render(request,'gerencias/novo_funcionario.html')
+    else:
+        return render(request,'gerencias/lista_funcionarios.html')
+
+@login_required
+def desativa_funcionario(request, id_funcionario):
+    if request.method == 'POST': 
+        id = id_funcionario
+        sql = f"UPDATE tb_funcionario SET flag_ativo = 'N' WHERE id_funcionario = { escapar(id)}"  
+        result = Conn.executa_insert(sql)
         func = Conn.executa_query(
-        f"SELECT * FROM tb_funcionario WHERE id_funcionario={ escapar(result) }")      
+            f"SELECT * FROM tb_funcionario WHERE  flag_ativo = 'S'")        
         return render(request,'gerencias/lista_funcionarios.html',{ 'lista': func })
-    else :
-       return render(request,'gerencias/novo_funcionario.html')
+    else:
+        return redirect('lista_funcionarios')
 
 @login_required
-def desativa_funcionario(request, id_funcionario):  
-    id = id_funcionario  
-    sql = f"UPDATE tb_funcionario SET flag_ativo = 'N' WHERE id_funcionario = { escapar(id)}"  
-    result = Conn.executa_insert(sql)
-    func = Conn.executa_query(
-        f"SELECT * FROM tb_funcionario WHERE  flag_ativo = 'S'")        
-    return render(request,'gerencias/lista_funcionarios.html',{ 'lista': func })
-
-@login_required
-def reativa_funcionario(request, id_funcionario):  
-    id = id_funcionario 
-    sql = f"UPDATE tb_funcionario SET flag_ativo = 'S' WHERE id_funcionario = { escapar(id)}"  
-    result = Conn.executa_insert(sql)
-    func = Conn.executa_query(
-        f"SELECT * FROM tb_funcionario WHERE  flag_ativo = 'S'")        
-    return render(request,'gerencias/lista_funcionarios.html',{ 'lista': func })
+def reativa_funcionario(request, id_funcionario):
+    if request.method == 'POST':
+        id = id_funcionario  
+        sql = f"UPDATE tb_funcionario SET flag_ativo = 'S' WHERE id_funcionario = { escapar(id)}"  
+        result = Conn.executa_insert(sql)
+        func = Conn.executa_query(
+            f"SELECT * FROM tb_funcionario WHERE  id_funcionario = {escapar(id_funcionario)})")
+        return render(request,'gerencias/lista_funcionarios.html',{ 'lista': func })
+    else:
+        messages.success(request, f'Funcionário(a) não reativado(a) com sucesso!') 
+        return redirect('lista_funcionarios_desativos')
 
 @login_required
 def lista_funcionarios_desativos(request):
@@ -142,28 +159,40 @@ def novo_responsavel(request):
 @login_required
 def insere_novo_responsavel(request):
     if request.method == 'POST':
-        id_fun_cad = request.POST.get('id_usuario_cad')
-        nome = request.POST.get('pnome')
-        sobrenome = request.POST.get('snome')
-        cpf = request.POST.get('cpf')
-        dt_nasc = request.POST.get('dt_nasc')
-        resp_trabalha = request.POST.get('resp_trabalha')
-        flag_conjuge = request.POST.get('flag_conjuge')
-        conjuge_trabalha = request.POST.get('conjuge_trabalha')
-        endereco = request.POST.get('endereco')
-        comp = request.POST.get('complemento')
-        bairro = request.POST.get('bairro')
-        cidade = request.POST.get('cidade')
-        estado = request.POST.get('estado')
-        obs = request.POST.get('obs')
-        sql1 = "INSERT INTO tb_cadastro_responsavel (id_usuario_cad, pnome, snome, cpf, data_nascimento, flag_responsavel_trabalha, flag_conjuge, flag_conjuge_trabalha, endereco, complemento, bairro, cidade, estado,observacoes)"
-        sql2 = f"VALUES({ escapar(id_fun_cad) }, {escapar(nome)}, {escapar(sobrenome)}, {escapar(cpf)}, {escapar(dt_nasc)}, {escapar(resp_trabalha)}, {escapar(flag_conjuge)}, {escapar(conjuge_trabalha)}, {escapar(endereco)}, {escapar(comp)}, {escapar(bairro)}, {escapar(cidade)}, {escapar(estado)}, {escapar(obs)})"
-        result = Conn.executa_insert(sql1+sql2)    
-        if result :
-            
-            return redirect('lista_responsavel')
+        try:
+            id_fun_cad = request.POST.get('id_usuario_cad')
+            nome = request.POST.get('pnome')
+            sobrenome = request.POST.get('snome')
+            cpf = request.POST.get('cpf')
+            cpf = cpf.replace('.', '').replace('-', '')  # Remove máscara do CPF
+            dt_nasc = request.POST.get('dt_nasc').replace('-', '')  # Substitui '/' por '-' para facilitar o processamento
+            a = dt_nasc[0:4]
+            m = dt_nasc[4:6]
+            d = dt_nasc[6:8]
+            dt_nasc = f"{d}/{m}/{a}"  # Formata a data no formato 'dd/mm/yyyy'
+            resp_trabalha = request.POST.get('resp_trabalha')
+            flag_conjuge = request.POST.get('flag_conjuge')
+            conjuge_trabalha = request.POST.get('conjuge_trabalha')
+            endereco = request.POST.get('endereco')
+            comp = request.POST.get('complemento')
+            bairro = request.POST.get('bairro')
+            cidade = request.POST.get('cidade')
+            estado = request.POST.get('estado')
+            obs = request.POST.get('obs')
 
-        return redirect('lista_responsavel')
+            sql1 = "INSERT INTO tb_cadastro_responsavel (id_usuario_cad, pnome, snome, cpf, data_nascimento, flag_responsavel_trabalha, flag_conjuge, flag_conjuge_trabalha, endereco, complemento, bairro, cidade, estado,observacoes)"
+            sql2 = f"VALUES({ escapar(id_fun_cad) }, {escapar(nome)}, {escapar(sobrenome)}, {escapar(cpf)}, {escapar(dt_nasc)}, {escapar(resp_trabalha)}, {escapar(flag_conjuge)}, {escapar(conjuge_trabalha)}, {escapar(endereco)}, {escapar(comp)}, {escapar(bairro)}, {escapar(cidade)}, {escapar(estado)}, {escapar(obs)})"
+            result = Conn.executa_insert(sql1+sql2)    
+            if result :    
+                return redirect('lista_responsavel')
+
+            return redirect('lista_responsavel')
+            
+        except Exception as e:
+            mensagem = f"Erro ao inserir responsável: {e}"
+            return pagina_erro(request, mensagem=mensagem)
+    else:
+        return render(request,'gerencias/novo_responsavel.html')
 
 
 @login_required
@@ -193,7 +222,7 @@ def lista_responsavel_des(request):
         'dados': responsavel,
         'titulo': 'Responsável não Validados'
     }
-    return render(request, 'gerencias/lista_responsavel_nval.html', contexto)
+    return render(request, 'gerencias/lista_responsavel_des.html', contexto)
 
 
 @login_required
@@ -226,6 +255,17 @@ def atualiza_responsavel(request):
     responsavel.save()
     return redirect('lista_responsavel')
 
+@login_required
+def valida_responsavel(request, id_responsavel):
+    responsavel = get_object_or_404(TbCadastroResponsavel, pk=id_responsavel)
+    responsavel.flag_validado = 'S'  
+    responsavel.save()
+    registros = TbCadastroResponsavel.objects.filter(flag_ativo='N').order_by('-ultima_atualizacao')
+    contexto = {
+        'dados': registros,
+        'titulo': 'Responsáveis Inativos'
+    }
+    return render(request, 'gerencias/lista_responsavel.html', contexto)
 
 @login_required
 def desativa_responsavel(request, id_responsavel):
@@ -265,6 +305,7 @@ def lista_filhos(request, id_responsavel):
 
 @login_required
 def lista_filhos_total(request):    
+
     lista = Conn.executa_query(
         f"SELECT * FROM tb_filhos_responsavel WHERE  flag_ativo = 'S' ORDER BY id_responsavel")  
     
@@ -288,11 +329,14 @@ def reativa_filhos_responsavel(request,id_responsavel):
 
 
 @login_required
-def desativar_filho(request,id_filho,id_responsavel):
-    registro = TbFilhosResponsavel.objects.filter(id_filho=id_filho).first()
-    registro.objects.update(flag_ativo = 'N')
-    registro.save()
-    return redirect('lista_filhos',id_responsavel)
+def desativar_filho(request,id_filho):
+    try:
+        sql = f"UPDATE tb_filhos_responsavel SET flag_ativo = 'N' WHERE id_filho = { escapar(id_filho)}"
+        Conn.executa_query(sql)
+        return redirect('lista_filhos_total')
+    except Exception as e:
+        mensagem = f"Erro ao desativar criança com ID {id_filho}.\n {e}"
+        return pagina_erro(request, mensagem=mensagem)      
 
 
 @login_required
@@ -323,6 +367,15 @@ def novo_filho(request,id_responsavel):
     }
     return render(request, 'gerencias/novo_filho.html', contexto)
 
+@login_required
+def editar_filho(request, id_filho):
+    registro = TbFilhosResponsavel.objects.filter(id_filho=id_filho).first()
+    contexto = {
+        'dados': registro,
+        'id_responsavel': registro.id_responsavel,  # Isso é suficiente
+        'titulo': 'Editar Criança'
+    }
+    return render(request, 'gerencias/editar_filho.html', contexto)
 
 @login_required
 def insere_novo_filho(request):
