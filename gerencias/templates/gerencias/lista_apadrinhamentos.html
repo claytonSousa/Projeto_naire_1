@@ -128,7 +128,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for apad in registros %}
+                    {% for apad in registro %}
                     <tr class="apad-row" 
                         data-status="{{ apad.flag_ativo }}"
                         data-id-crianca="{{ apad.id_filho }}"
@@ -144,7 +144,7 @@
                                     <br>
                                     <small class="text-muted">
                                         <i class="bi bi-clock-history"></i> 
-                                        ID: {{ apad.id_apadrinhamento }}
+                                        ID: {{ mad_pad }}
                                     </small>
                                 </div>
                             </div>

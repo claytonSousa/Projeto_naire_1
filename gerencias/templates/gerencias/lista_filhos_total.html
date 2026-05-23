@@ -209,7 +209,7 @@
                         <td>
                             <div class="btn-group" role="group">
                                 {% if filho.flag_ativo == 'S' %}
-                                    <form action="{% url 'desativar_filho' id_responsavel =filho.id_responsavel %}" 
+                                    <form action="{% url 'desativar_filho' id_responsavel=filho.id_responsavel %}" 
                                         method="POST" 
                                         style="display: inline-block;"
                                         class="desativar-form"
