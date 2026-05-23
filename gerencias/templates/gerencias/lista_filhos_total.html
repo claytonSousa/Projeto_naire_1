@@ -126,6 +126,7 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col" class="px-4">#ID</th>
+                        <th scope="col"># RESP</th> 
                         <th scope="col">👤 NOME</th>
                         <th scope="col">🎂 DT NASC</th>
                         <th scope="col">🆔 CPF</th>
@@ -145,6 +146,7 @@
                         data-nascimento="{{ filho.data }}"
                         data-outra-ong="{{ filho.cadastro_outra_ong }}">
                         <td class="px-4 fw-bold">#{{ filho.id_filho }}</td>
+                        <td class="fw-bold text-muted">#{{ filho.id_responsavel }}</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <div class="avatar-circle me-3">
@@ -206,13 +208,37 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'desativar_filho' id_filho=filho.id_filho %}" 
-                                   class="btn btn-outline-danger btn-sm desativar-btn"
-                                   data-bs-toggle="tooltip" 
-                                   title="Desativar filho"
-                                   data-nome="{{ filho.pnome }} {{ filho.snome }}" method="post">
-                                    <i class="bi bi-person-x-fill"></i> Desativar
-                                </a>
+                                {% if filho.flag_ativo == 'S' %}
+                                    <form action="{% url 'desativar_filho' id_responsavel =filho.id_responsavel %}" 
+                                        method="POST" 
+                                        style="display: inline-block;"
+                                        class="desativar-form"
+                                        data-id="{{ filho.id_filho }}"
+                                        data-nome="{{ filho.pnome }} {{ filho.snome }}">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                class="btn btn-outline-danger btn-sm desativar-btn"
+                                                data-bs-toggle="tooltip" 
+                                                title="Desativar filho">
+                                            <i class="bi bi-person-x-fill"></i> Desativar
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'reativar_filho' id_filho=filho.id_filho %}" 
+                                        method="POST" 
+                                        style="display: inline-block;"
+                                        class="reativar-form"
+                                        data-id="{{ filho.id_filho }}"
+                                        data-nome="{{ filho.pnome }} {{ filho.snome }}">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                class="btn btn-outline-success btn-sm reativar-btn"
+                                                data-bs-toggle="tooltip" 
+                                                title="Reativar filho">
+                                            <i class="bi bi-person-plus-fill"></i> Reativar
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>

@@ -12,9 +12,15 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex align-items-center gap-3">
-                    <a href="{% url 'lista_filhos' id_responsavel=id_responsavel %}" class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-arrow-left"></i> Voltar
-                    </a>
+                    <!-- Botão Voltar convertido para POST -->
+                    <form action="{% url 'lista_filhos' id_responsavel=id_responsavel %}" 
+                          method="POST" 
+                          style="display: inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </button>
+                    </form>
                     <div>
                         <h1 class="display-5 fw-bold mb-2">
                             <i class="bi bi-person-plus-fill text-primary"></i> 
@@ -144,9 +150,15 @@
 
                             <!-- Botões de ação -->
                             <div class="d-flex gap-3 justify-content-end mt-5 pt-3 border-top">
-                                <a href="{% url 'lista_filhos' id_responsavel=id_responsavel %}" class="btn btn-outline-secondary btn-lg px-4">
-                                    <i class="bi bi-x-circle"></i> Cancelar
-                                </a>
+                                <!-- Botão Cancelar convertido para POST -->
+                                <form action="{% url 'lista_filhos' id_responsavel=id_responsavel %}" 
+                                      method="POST" 
+                                      style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-secondary btn-lg px-4">
+                                        <i class="bi bi-x-circle"></i> Cancelar
+                                    </button>
+                                </form>
                                 <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">
                                     <i class="bi bi-save-fill"></i> Cadastrar Filho
                                 </button>
@@ -307,6 +319,15 @@
         h3 {
             font-size: 1.2rem;
         }
+        
+        .d-flex.gap-3 {
+            flex-direction: column;
+        }
+        
+        .d-flex.gap-3 form,
+        .d-flex.gap-3 button {
+            width: 100%;
+        }
     }
     
     /* Scrollbar */
@@ -416,8 +437,6 @@
         const form = document.getElementById('novoFilhoForm');
         
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
             // Validar campos obrigatórios
             const requiredFields = form.querySelectorAll('[required]');
             let isValid = true;
@@ -432,6 +451,7 @@
             });
             
             if (!isValid) {
+                e.preventDefault();
                 Swal.fire({
                     icon: 'error',
                     title: 'Campos obrigatórios',
@@ -444,6 +464,7 @@
             // Validar data de nascimento
             const dtNasc = dtNascInput.value;
             if (!dtNasc || !/^\d{2}\/\d{2}\/\d{4}$/.test(dtNasc)) {
+                e.preventDefault();
                 Swal.fire({
                     icon: 'error',
                     title: 'Data inválida',
@@ -457,6 +478,7 @@
             // Validar CPF se preenchido
             const cpf = cpfInput.value.replace(/\D/g, '');
             if (cpf && cpf.length !== 11) {
+                e.preventDefault();
                 Swal.fire({
                     icon: 'error',
                     title: 'CPF Inválido',
@@ -468,6 +490,7 @@
             }
             
             // Confirmar cadastro
+            e.preventDefault();
             Swal.fire({
                 title: 'Confirmar cadastro',
                 html: `
@@ -505,6 +528,9 @@
                 this.classList.remove('is-invalid');
             });
         });
+        
+        // Remover validação de required do HTML5 para usar SweetAlert
+        form.setAttribute('novalidate', 'novalidate');
     });
 </script>
 

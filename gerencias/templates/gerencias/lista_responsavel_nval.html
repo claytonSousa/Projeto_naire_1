@@ -210,25 +210,37 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'edit_responsavel' id_responsavel=item.id_responsavel %}" 
-                                   class="btn btn-outline-primary btn-sm" 
-                                   data-bs-toggle="tooltip" 
-                                   title="Editar responsável">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
+                                <form action="{% url 'edit_responsavel' id_responsavel=item.id_responsavel %}" 
+                                    method="POST" 
+                                    style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-primary btn-sm" 
+                                            data-bs-toggle="tooltip" 
+                                            title="Editar responsável">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </button>
+                                </form>
                                 <a href="{% url 'lista_filhos' id_responsavel=item.id_responsavel %}" 
                                    class="btn btn-outline-info btn-sm"
                                    data-bs-toggle="tooltip" 
                                    title="Ver filhos">
                                     <i class="bi bi-people"></i> Filhos
                                 </a>
-                                <a href="{% url 'valida_responsavel' id_responsavel=item.id_responsavel %}" 
-                                   class="btn btn-outline-success btn-sm reativar-btn"
-                                   data-bs-toggle="tooltip" 
-                                   title="Validar responsável"
-                                   data-nome="{{ item.pnome }} {{ item.snome }}">
-                                    <i class="bi bi-arrow-repeat"></i> Validar
-                                </a>
+                                <form action="{% url 'desativar_responsavel' id_responsavel=item.id_responsavel %}" 
+                                    method="POST" 
+                                    style="display: inline-block;"
+                                    class="desativar-form"
+                                    data-id="{{ item.id_responsavel }}"
+                                    data-nome="{{ item.pnome }} {{ item.snome }}">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-danger btn-sm desativar-btn"
+                                            data-bs-toggle="tooltip" 
+                                            title="Desativar responsável">
+                                        <i class="bi bi-person-x-fill"></i> Desativar
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

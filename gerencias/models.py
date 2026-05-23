@@ -190,3 +190,35 @@ class TbApadrinhamentoCrianca(models.Model):
     class Meta:
         managed = False
         db_table = 'tb_apadrinhamento_crianca'
+
+class TbEntrega(models.Model):
+    id_entrega = models.AutoField(primary_key=True)
+    id_evento = models.IntegerField()
+    id_mad_pad = models.IntegerField(blank=True, null=True)
+    id_crianca = models.IntegerField(blank=True, null=True)
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    bairro = models.CharField(max_length=255, blank=True, null=True)
+    cidade = models.CharField(max_length=255, blank=True, null=True)
+    estado = models.CharField(max_length=255, blank=True, null=True)
+    data_cadastro = models.DateTimeField(blank=True, null=True)
+    data_chegada = models.DateTimeField(blank=True, null=True)
+    flag_finalizado = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tb_entrega'
+
+class TbEvento(models.Model):
+    id_evento = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=255)
+    data_evento = models.CharField(max_length=10)
+    data_cadastro = models.DateTimeField(blank=True, null=True)
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    bairro = models.CharField(max_length=255, blank=True, null=True)
+    cidade = models.CharField(max_length=255, blank=True, null=True)
+    estado = models.CharField(max_length=225, blank=True, null=True)
+    flag_finalizado = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'tb_evento'

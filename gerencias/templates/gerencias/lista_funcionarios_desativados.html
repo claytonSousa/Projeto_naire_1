@@ -1,3 +1,4 @@
+
 {% extends 'bases.html' %}
 {% load static %}
 
@@ -22,10 +23,14 @@
                         </p>
                     </div>
                     <div>
-                        <a href="{% url 'lista_funcionarios' %}" class="btn btn-outline-success btn-lg shadow-sm">
-                            <i class="bi bi-person-check-fill"></i> 
-                            Ver Ativos
-                        </a>
+                        <!-- Botão Ver Ativos convertido para POST -->
+                        <form action="{% url 'lista_funcionarios' %}" method="POST" style="display: inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-success btn-lg shadow-sm">
+                                <i class="bi bi-person-check-fill"></i> 
+                                Ver Ativos
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <hr class="my-3">
@@ -147,47 +152,59 @@
                                     </small>
                                 </div>
                             </div>
-                        </td>
+                        </div>
                         <td>
                             <code class="cpf-display">{{ funcionario.cpf_funcionario }}</code>
-                        </td>
+                        </div>
                         <td>
                             <i class="bi bi-whatsapp text-success"></i>
                             <span class="phone-display">{{ funcionario.telefone }}</span>
-                        </td>
+                        </div>
                         <td>
                             <small>
                                 <i class="bi bi-geo-alt-fill text-muted"></i>
                                 {{ funcionario.endereco }}, {{ funcionario.complemento|default:"—" }}
                             </small>
-                        </td>
+                        </div>
                         <td>
                             <span class="badge bg-info bg-opacity-10 text-dark p-2">
                                 <i class="bi bi-building"></i> {{ funcionario.cidade }}/{{ funcionario.estado }}
                             </span>
-                        </td>
+                        </div>
                         <td>
                             <span class="badge bg-warning text-dark">
                                 <i class="bi bi-exclamation-triangle-fill"></i> Inativo
                             </span>
-                        </td>
+                        </div>
                         <td>
                             <div class="text-center">
-                                <a class="btn btn-success btn-sm reativar-btn" data-id="{{ funcionario.id_funcionario }}"
-                                        data-nome="{{ funcionario.pnome }} {{ funcionario.snome }}" method="post">
-                                    <i class="bi bi-arrow-repeat"></i> Reativar
-                                </a>
+                                <!-- Botão Reativar convertido para POST -->
+                                <form action="{% url 'reativa_funcionario' id_funcionario=funcionario.id_funcionario %}" 
+                                      method="POST" 
+                                      style="display: inline-block;"
+                                      class="reativar-form"
+                                      data-id="{{ funcionario.id_funcionario }}"
+                                      data-nome="{{ funcionario.pnome }} {{ funcionario.snome }}">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-success btn-sm reativar-btn">
+                                        <i class="bi bi-arrow-repeat"></i> Reativar
+                                    </button>
+                                </form>
                             </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                     {% empty %}
                     <tr>
                         <td colspan="8" class="text-center py-5">
                             <i class="bi bi-emoji-smile display-1 text-muted"></i>
                             <p class="mt-3 text-muted">Nenhum funcionário inativo encontrado.</p>
-                            <a href="{% url 'lista_funcionarios_ativos' %}" class="btn btn-primary mt-2">
-                                <i class="bi bi-people-fill"></i> Ver funcionários ativos
-                            </a>
+                            <form action="{% url 'lista_funcionarios_ativos' %}" method="POST" style="display: inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-2">
+                                    <i class="bi bi-people-fill"></i> Ver funcionários ativos
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
@@ -360,6 +377,14 @@
         .card-body h2 {
             font-size: 1.5rem;
         }
+        
+        .reativar-form {
+            width: 100%;
+        }
+        
+        .reativar-btn {
+            width: 100%;
+        }
     }
     
     /* Scrollbar */
@@ -413,7 +438,6 @@
 </style>
 
 <script>
-
     document.addEventListener('DOMContentLoaded', function() {
         // Função para formatar CPF
         function formatCPF(cpf) {
@@ -500,11 +524,11 @@
         document.getElementById('searchBtn').addEventListener('click', filterTable);
         document.getElementById('filterCity').addEventListener('change', filterTable);
         
-        // Modal de confirmação para reativação
-        const reativarBtns = document.querySelectorAll('.reativar-btn');
+        // Confirmação para reativação com formulário POST
+        const reativarForms = document.querySelectorAll('.reativar-form');
         
-        reativarBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
+        reativarForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const id = this.getAttribute('data-id');
                 const nome = this.getAttribute('data-nome');
@@ -527,38 +551,12 @@
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Usando fetch para enviar requisição POST
-                        fetch(`/gerencias/reativa_funcionario/${id}`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRFToken': getCookie('csrftoken'), // Token CSRF obrigatório
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                id_funcionario: id
-                            })
-                        })                      
-                        // Redirecionar para a URL de reativação
-                        window.location.href = "{% url 'reativa_funcionario' id_funcionario=0 %}".replace('0', id);
+                        // Enviar o formulário POST
+                        this.submit();
                     }
                 });
             });
         });
-        // Função para obter o token CSRF (necessário para POST)
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
         
         // Exportar lista
         document.getElementById('exportBtn').addEventListener('click', function() {
@@ -601,7 +599,6 @@
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
-    
 </script>
 
 <!-- SweetAlert2 -->

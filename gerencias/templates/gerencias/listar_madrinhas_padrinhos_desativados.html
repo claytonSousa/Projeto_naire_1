@@ -21,15 +21,6 @@
                             Gerencie os apoiadores que ajudam a transformar vidas na ONG NAIRE
                         </p>
                     </div>
-                    <div>
-                        <form action="{% url 'novo_madrinha_padrinho' %}" method="POST" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success btn-lg shadow-sm">
-                                <i class="bi bi-person-plus-fill"></i> 
-                                Novo Padrinho/Madrinha
-                            </button>
-                        </form>
-                    </div>
                 </div>
                 <hr class="my-3">
             </div>
@@ -53,7 +44,6 @@
             <div class="col-md-3">
                 <select class="form-select shadow-sm" id="filterStatus">
                     <option value="todos">📋 Todos os status</option>
-                    <option value="S">✅ Ativos</option>
                     <option value="N">⛔ Inativos</option>
                 </select>
             </div>
@@ -130,7 +120,7 @@
                         <th scope="col">🆔 CPF</th>
                         <th scope="col">📍 CIDADE/UF</th>
                         <th scope="col">📅 DATA CADASTRO</th>
-                        <th scope="col">✅ STATUS</th>
+                        <th scope="col">⛔ STATUS</th>
                         <th scope="col" class="text-center" colspan="2">⚙️ AÇÕES</th>
                     </tr>
                 </thead>
@@ -195,20 +185,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <div class="btn-group" role="group">
-                                <!-- Apadrinhar - método POST -->
-                                <form action="{% url 'apadrinhar_crianca' item.id_mad_pad %}" 
-                                      method="POST" 
-                                      style="display: inline-block;">
-                                    {% csrf_token %}
-                                    <button type="submit" 
-                                            class="btn btn-success btn-sm"
-                                            data-bs-toggle="tooltip" 
-                                            title="Apadrinhar criança">
-                                        <i class="bi bi-gift-fill"></i> Apadrinhar
-                                    </button>
-                                </form>
-                                
+                            <div class="btn-group" role="group">       
                                 <!-- Editar - método POST -->
                                 <form action="{% url 'editar_madrinha_padrinho' item.id_mad_pad %}" 
                                       method="POST" 
@@ -229,12 +206,6 @@
                         <td colspan="7" class="text-center py-5">
                             <i class="bi bi-emoji-heart-eyes display-1 text-muted"></i>
                             <p class="mt-3 text-muted">Nenhum padrinho ou madrinha cadastrado ainda.</p>
-                            <form action="{% url 'novo_madrinha_padrinho' %}" method="POST" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary mt-2">
-                                    <i class="bi bi-person-plus-fill"></i> Cadastrar primeiro apoiador
-                                </button>
-                            </form>
                         </td>
                     </tr>
                     {% endfor %}

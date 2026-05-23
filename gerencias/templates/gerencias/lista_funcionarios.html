@@ -22,10 +22,14 @@
                         </p>
                     </div>
                     <div>
-                        <a href="{% url 'novo_funcionario' %}" class="btn btn-success btn-lg shadow-sm">
-                            <i class="bi bi-person-plus-fill"></i> 
-                            Novo Funcionário
-                        </a>
+                        <!-- Botão Novo Funcionário convertido para POST -->
+                        <form action="{% url 'novo_funcionario' %}" method="POST" style="display: inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                                <i class="bi bi-person-plus-fill"></i> 
+                                Novo Funcionário
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <hr class="my-3">
@@ -92,7 +96,6 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                
                                 <div class="avatar-circle me-2">
                                     <span class="initials">
                                         <small>{{ funcionario.pnome|slice:":1" }}{{ funcionario.snome|slice:":1" }}</small>
@@ -137,18 +140,34 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'editar_funcionario' id_funcionario=funcionario.id_funcionario %}" 
-                                   class="btn btn-outline-primary btn-sm" 
-                                   data-bs-toggle="tooltip" 
-                                   title="Editar funcionário">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <a data-id="{{ funcionario.id_funcionario}}" class="btn btn-outline-danger btn-sm desativar-btn"
-                                    data-bs-toggle="tooltip" 
-                                    title="Desativar"
-                                    data-nome="{{ funcionario.pnome }} {{ funcionario.snome }}" method="post" onclick="confirmarDesativacao(functionionario.id_funcionario)">
-                                    <i class="bi bi-person-x-fill"></i> Desativar
-                                 </a>
+                                <!-- Botão Editar convertido para POST -->
+                                <form action="{% url 'editar_funcionario' id_funcionario=funcionario.id_funcionario %}" 
+                                      method="POST" 
+                                      style="display: inline-block;">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-primary btn-sm" 
+                                            data-bs-toggle="tooltip" 
+                                            title="Editar funcionário">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </button>
+                                </form>
+                                
+                                <!-- Botão Desativar convertido para POST -->
+                                <form action="{% url 'desativa_funcionario' id_funcionario=funcionario.id_funcionario %}" 
+                                      method="POST" 
+                                      style="display: inline-block;"
+                                      class="desativar-form"
+                                      data-id="{{ funcionario.id_funcionario }}"
+                                      data-nome="{{ funcionario.pnome }} {{ funcionario.snome }}">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-danger btn-sm desativar-btn"
+                                            data-bs-toggle="tooltip" 
+                                            title="Desativar">
+                                        <i class="bi bi-person-x-fill"></i> Desativar
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -157,9 +176,12 @@
                         <td colspan="8" class="text-center py-5">
                             <i class="bi bi-inbox display-1 text-muted"></i>
                             <p class="mt-3 text-muted">Nenhum funcionário cadastrado ainda.</p>
-                            <a href="{% url 'cadastrar_funcionario' %}" class="btn btn-primary mt-2">
-                                <i class="bi bi-person-plus-fill"></i> Cadastrar primeiro funcionário
-                            </a>
+                            <form action="{% url 'cadastrar_funcionario' %}" method="POST" style="display: inline-block;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-2">
+                                    <i class="bi bi-person-plus-fill"></i> Cadastrar primeiro funcionário
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
@@ -243,6 +265,15 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     
+    .btn-group {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .btn-group form {
+        display: inline-block;
+    }
+    
     .btn-group .btn {
         transition: all 0.2s ease;
     }
@@ -286,8 +317,13 @@
             gap: 5px;
         }
         
+        .btn-group form {
+            width: 100%;
+        }
+        
         .btn-group .btn {
             margin: 2px 0;
+            width: 100%;
         }
         
         .avatar-circle {
@@ -332,22 +368,6 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// Função para obter o token CSRF (necessário para POST)
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
 // Função para busca em tempo real
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
@@ -399,10 +419,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     
-    // Confirmação para DESATIVAR funcionário
-    const desativarBtns = document.querySelectorAll('.desativar-btn');
-    desativarBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+    // Confirmação para DESATIVAR funcionário com formulário POST
+    const desativarForms = document.querySelectorAll('.desativar-form');
+    desativarForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             const id = this.getAttribute('data-id');
             const nome = this.getAttribute('data-nome');
@@ -425,19 +445,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Usando fetch para enviar requisição POST
-                    fetch(`/gerencias/desativa_funcionario/${id}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': getCookie('csrftoken'), // Token CSRF obrigatório
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            id_funcionario: id
-                        })
-                    })                      
-                    // Redirecionar para a URL de reativação
-                    window.location.href = "{% url 'desativa_funcionario' id_funcionario=0 %}".replace('0', id);
+                    // Enviar o formulário POST
+                    this.submit();
                 }
             });
         });
@@ -503,7 +512,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-
-<!-- Ícones Bootstrap (adicione no base.html se não tiver) -->
+<!-- Ícones Bootstrap -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

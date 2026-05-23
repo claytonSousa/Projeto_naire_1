@@ -177,13 +177,19 @@
                                             </td>
                                             <td>
                                                 <div class="text-center">
-                                                    <a href="{% url 'desativar_filho' id_filho=filho.id_filho %}" 
-                                                       class="btn btn-outline-danger btn-sm desativar-btn"
-                                                       data-bs-toggle="tooltip" 
-                                                       title="Desativar criança"
-                                                       data-nome="{{ filho.pnome }} {{ filho.snome }}">
-                                                        <i class="bi bi-person-x-fill"></i> Desativar
-                                                    </a>
+                                                    <form action="{% url 'desativar_filho' id_responsavel=filho.id_responsavel %}" 
+                                                        method="POST" 
+                                                        style="display: inline-block;"
+                                                        class="desativar-form"
+                                                        data-nome="{{ filho.pnome }} {{ filho.snome }}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" 
+                                                                class="btn btn-outline-danger btn-sm desativar-btn"
+                                                                data-bs-toggle="tooltip" 
+                                                                title="Desativar criança" disabled>
+                                                            <i class="bi bi-person-x-fill"></i> Desativar
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>

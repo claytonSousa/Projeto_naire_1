@@ -1,0 +1,361 @@
+{% extends 'bases.html'%}
+    
+{% block page_title %}
+    CADASTRO DE MADRINHAS E OU PADRINHOS
+{% endblock %}
+
+{% block container %}
+<div class="container mt-4">
+    <!-- Cabeçalho da página -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="display-5 fw-bold mb-2">
+                        <i class="bi bi-person-hearts text-primary"></i> 
+                        Editar Madrinha ou Padrinho
+                    </h1>
+                    <p class="text-muted lead mb-0">
+                        Atualize os dados do apoiador da ONG NAIRE
+                    </p>
+                </div>
+                <div>
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg shadow-sm">
+                        <i class="bi bi-arrow-left-circle-fill"></i> 
+                        Voltar
+                    </a>
+                </div>
+            </div>
+            <hr class="my-3">
+        </div>
+    </div>
+
+    <!-- Formulário de edição -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-gradient-primary text-white border-0 rounded-top-4 p-4">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus-fill"></i> 
+                        Editar Dados do Padrinho/Madrinha
+                    </h4>
+                    <p class="mb-0 mt-2 opacity-75 small">
+                        Preencha todas as informações abaixo
+                    </p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form action="{% url 'atualiza_madrinha_padrinho' registro.id_mad_pad %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id_mad_pad" value="{{ registro.id_mad_pad }}">
+                        
+                        <!-- CPF -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-credit-card"></i> CPF
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg shadow-sm" 
+                                   placeholder="Digite o CPF" 
+                                   name="cpf" 
+                                   maxlength="14"
+                                   value="{{ registro.cpf|default:'' }}">
+                            <small class="text-muted">Apenas números</small>
+                        </div>
+                        
+                        <!-- Anonimato -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-incognito"></i> Anonimato
+                            </label>
+                            <select name="anonimo" class="form-select form-select-lg shadow-sm">
+                                <option value="S" {% if registro.flag_anonimo == 'S' %}selected{% endif %}>Sim - Manter em anonimato</option>
+                                <option value="N" {% if registro.flag_anonimo == 'N' %}selected{% endif %}>Não - Identificar publicamente</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Nome e Sobrenome em linha -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-person-fill"></i> Nome
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Primeiro nome" 
+                                       name="pnome" 
+                                       value="{{ registro.pnome|default:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-person-badge-fill"></i> Sobrenome
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Sobrenome" 
+                                       name="snome" 
+                                       value="{{ registro.snome|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <!-- Endereço -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-geo-alt-fill"></i> Endereço
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg shadow-sm" 
+                                   placeholder="Rua, Número" 
+                                   name="endereco" 
+                                   value="{{ registro.endereco|default:'' }}">
+                        </div>
+                        
+                        <!-- Complemento -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-building"></i> Complemento
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg shadow-sm" 
+                                   placeholder="Apto, Bloco, Casa" 
+                                   name="complemento" 
+                                   value="{{ registro.complemento|default:'' }}">
+                        </div>
+                        
+                        <!-- Bairro -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-map-fill"></i> Bairro
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg shadow-sm" 
+                                   placeholder="Bairro" 
+                                   name="bairro" 
+                                   value="{{ registro.bairro|default:'' }}">
+                        </div>
+                        
+                        <!-- Cidade e Estado em linha -->
+                        <div class="row mb-4">
+                            <div class="col-md-7">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-building"></i> Cidade
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg shadow-sm" 
+                                       placeholder="Cidade" 
+                                       name="cidade" 
+                                       value="{{ registro.cidade|default:'' }}">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold">
+                                    <i class="bi bi-flag-fill"></i> UF
+                                </label>
+                                <select name="estado" class="form-select form-select-lg shadow-sm">
+                                    <option value="SP" {% if registro.estado == 'SP' %}selected{% endif %}>São Paulo (SP)</option>
+                                    <option value="RJ" {% if registro.estado == 'RJ' %}selected{% endif %}>Rio de Janeiro (RJ)</option>
+                                    <option value="MG" {% if registro.estado == 'MG' %}selected{% endif %}>Minas Gerais (MG)</option>
+                                    <option value="SC" {% if registro.estado == 'SC' %}selected{% endif %}>Santa Catarina (SC)</option>
+                                    <option value="BA" {% if registro.estado == 'BA' %}selected{% endif %}>Bahia (BA)</option>
+                                    <option value="AM" {% if registro.estado == 'AM' %}selected{% endif %}>Amazonas (AM)</option>
+                                    <option value="PR" {% if registro.estado == 'PR' %}selected{% endif %}>Paraná (PR)</option>
+                                    <option value="RS" {% if registro.estado == 'RS' %}selected{% endif %}>Rio Grande do Sul (RS)</option>
+                                    <option value="PE" {% if registro.estado == 'PE' %}selected{% endif %}>Pernambuco (PE)</option>
+                                    <option value="CE" {% if registro.estado == 'CE' %}selected{% endif %}>Ceará (CE)</option>
+                                    <option value="DF" {% if registro.estado == 'DF' %}selected{% endif %}>Distrito Federal (DF)</option>
+                                    <option value="GO" {% if registro.estado == 'GO' %}selected{% endif %}>Goiás (GO)</option>
+                                    <option value="ES" {% if registro.estado == 'ES' %}selected{% endif %}>Espírito Santo (ES)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Status Ativo -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-toggle-on"></i> Status
+                            </label>
+                            <select name="flag_ativo" class="form-select form-select-lg shadow-sm">
+                                <option value="S" {% if registro.flag_ativo == 'S' %}selected{% endif %}>Ativo - Participante ativo</option>
+                                <option value="N" {% if registro.flag_ativo == 'N' %}selected{% endif %}>Inativo - Temporariamente inativo</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Botões de ação -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+                            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-x-circle-fill"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
+                                <i class="bi bi-check-circle-fill"></i> Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Gradientes consistentes com o sistema */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+    
+    /* Card com sombra suave */
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: none;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Estilização dos campos de formulário */
+    .form-control, .form-select {
+        border: 1px solid #dee2e6;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .form-control-lg, .form-select-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    
+    /* Labels */
+    .form-label {
+        margin-bottom: 0.5rem;
+        color: #2c3e4e;
+        font-size: 0.9rem;
+    }
+    
+    .form-label i {
+        margin-right: 0.5rem;
+        color: #3498db;
+    }
+    
+    /* Botões */
+    .btn {
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-success {
+        background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        border: none;
+    }
+    
+    .btn-success:hover {
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Header do card */
+    .card-header {
+        border-bottom: none;
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+    
+    /* Ícones nos placeholders */
+    input[type="text"]::placeholder {
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .d-grid {
+            gap: 0.5rem;
+        }
+    }
+    
+    /* Linha divisória */
+    hr {
+        background: linear-gradient(90deg, transparent, #3498db, transparent);
+        height: 2px;
+        opacity: 0.3;
+    }
+    
+    /* Estilização do select */
+    .form-select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%233498db' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    }
+    
+    /* Animações suaves */
+    .card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Scrollbar customizada */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #3498db;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #2980b9;
+    }
+    
+    /* Mensagens de erro (caso existam) */
+    .errorlist {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        list-style: none;
+        padding-left: 0;
+        margin-top: 0.25rem;
+    }
+</style>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% endblock %}

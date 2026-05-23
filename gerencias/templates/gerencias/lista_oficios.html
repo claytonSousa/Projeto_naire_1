@@ -50,13 +50,11 @@
             <div class="col-md-3">
                 <select class="form-select shadow-sm" id="filterAno">
                     <option value="todos">📅 Todos os anos</option>
-                    <!-- Anos serão preenchidos via JavaScript -->
                 </select>
             </div>
             <div class="col-md-3">
                 <select class="form-select shadow-sm" id="filterCriador">
                     <option value="todos">👤 Todos os criadores</option>
-                    <!-- Criadores serão preenchidos via JavaScript -->
                 </select>
             </div>
         </div>
@@ -190,20 +188,33 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="#" 
-                                   class="btn btn-outline-info btn-sm" 
-                                   data-bs-toggle="tooltip" 
-                                   title="Visualizar ofício completo">
-                                    <i class="bi bi-eye-fill"></i> Ver
-                                </a>
-                                <a href="{% url 'excluir_oficio' id_oficio=oficio.id_oficio %}" 
-                                   class="btn btn-outline-danger btn-sm excluir-btn"
-                                   data-bs-toggle="tooltip" 
-                                   title="Excluir ofício"
-                                   data-id="#{{ oficio.id_oficio }}"
-                                   data-destinatario="{{ oficio.destinatario }}">
-                                    <i class="bi bi-trash-fill"></i> Excluir
-                                </a>
+                                <!-- Formulário para Visualizar (POST) -->
+                                <form action="{% url 'exibe_oficio' id_oficio=oficio.id_oficio %}" 
+                                      method="POST" 
+                                      class="d-inline-block">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-info btn-sm" 
+                                            data-bs-toggle="tooltip" 
+                                            title="Visualizar ofício completo">
+                                        <i class="bi bi-eye-fill"></i> Visualizar
+                                    </button>
+                                </form>
+                                
+                                <!-- Formulário para Excluir (POST) -->
+                                <form action="{% url 'excluir_oficio' id_oficio=oficio.id_oficio %}" 
+                                      method="POST" 
+                                      class="d-inline-block excluir-form"
+                                      data-id="#{{ oficio.id_oficio }}"
+                                      data-destinatario="{{ oficio.destinatario }}">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-danger btn-sm excluir-btn"
+                                            data-bs-toggle="tooltip" 
+                                            title="Excluir ofício">
+                                        <i class="bi bi-trash-fill"></i> Excluir
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -339,9 +350,17 @@
     }
     
     /* Botões */
+    .btn-group {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .btn-group form {
+        display: inline-block;
+    }
+    
     .btn-group .btn {
         transition: all 0.2s ease;
-        margin: 0 2px;
     }
     
     .btn-group .btn:hover {
@@ -412,6 +431,14 @@
         
         .btn-group .btn {
             margin: 2px 0;
+        }
+        
+        .btn-group form {
+            width: 100%;
+        }
+        
+        .btn-group form button {
+            width: 100%;
         }
         
         .avatar-circle, .avatar-circle-sm {
@@ -533,8 +560,8 @@
         
         function filterTable() {
             const searchTerm = searchInput.value.toLowerCase();
-            const anoFilter = filterAno.value;
-            const criadorFilter = filterCriador.value;
+            const anoFilterValue = filterAno.value;
+            const criadorFilterValue = filterCriador.value;
             let visible = 0;
             
             tableRows.forEach(row => {
@@ -543,8 +570,8 @@
                 const criador = row.getAttribute('data-criador') || '';
                 
                 const matchesSearch = text.includes(searchTerm);
-                const matchesAno = anoFilter === 'todos' || dataAno === anoFilter;
-                const matchesCriador = criadorFilter === 'todos' || criador === criadorFilter;
+                const matchesAno = anoFilterValue === 'todos' || dataAno === anoFilterValue;
+                const matchesCriador = criadorFilterValue === 'todos' || criador === criadorFilterValue;
                 
                 if (matchesSearch && matchesAno && matchesCriador) {
                     row.style.display = '';
@@ -588,10 +615,10 @@
             });
         }
         
-        // Confirmação antes de excluir
-        const excluirBtns = document.querySelectorAll('.excluir-btn');
-        excluirBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
+        // Confirmação antes de excluir com formulário POST
+        const excluirForms = document.querySelectorAll('.excluir-form');
+        excluirForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
                 const id = this.getAttribute('data-id');
                 const destinatario = this.getAttribute('data-destinatario');
                 if (!confirm(`⚠️ Tem certeza que deseja excluir o ofício ${id} (para ${destinatario})?\n\nEsta ação não pode ser desfeita.`)) {

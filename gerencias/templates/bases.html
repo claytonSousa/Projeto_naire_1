@@ -20,11 +20,26 @@
                                 FUNCIONÁRIOS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios/">LISTA</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_funcionarios/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTA</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_funcionario/">NOVO</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/novo_funcionario/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">NOVO</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_funcionarios_desativados/">DESATIVADOS</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_funcionarios_desativados/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">DESATIVADOS</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                             </ul>
                         </li>
@@ -33,13 +48,33 @@
                                 RESPONSÁVEL
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_responsavel/">CADASTRAR</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/novo_responsavel/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">CADASTRAR</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel/">LISTAR VALIDADOS</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_responsavel/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR VALIDADOS</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_nval/">LISTAR NÃO VALIDADOS</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_responsavel_nval/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR NÃO VALIDADOS</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_responsavel_des/">LISTAR DESATIVADOS</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_responsavel_des/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR DESATIVADOS</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>                        
                             </ul>
                         </li>
@@ -48,11 +83,20 @@
                                 CRIANÇAS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_filhos_total/">LISTAR TOTAL</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_filhos_total/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR TOTAL</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a href="{% url 'buscar_filhos' %}" class="nav-link">
-                                        <i class="fas fa-search"></i> BUSCAR
-                                    </a>
+                                <li>
+                                    <form action="{% url 'buscar_filhos' %}" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">
+                                            <i class="fas fa-search"></i> BUSCAR
+                                        </button>
+                                    </form>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>                      
                             </ul>
@@ -62,11 +106,33 @@
                                 MADRINHAS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_madrinha_padrinho/">LISTAR</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_madrinha_padrinho/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR ATIVOS</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_madrinha_padrinho/">NOVO(A)</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/novo_madrinha_padrinho/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">NOVO(A)</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_apadrinhamento/">APADRINHAMENTOS</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_madrinha_padrinho_desativados/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR DESATIVADOS</button>
+                                    </form>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_apadrinhamento/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">APADRINHAMENTOS</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                             </ul>
                         </li>
@@ -75,9 +141,19 @@
                                 EVENTOS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_eventos/">LISTAR</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/listar_eventos/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_evento/">NOVO</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/novo_evento/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">NOVO</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                             </ul>
                         </li>
@@ -86,9 +162,19 @@
                                 ENTREGAS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_entregas/">LISTAR</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/listar_entregas/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTAR</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/nova_entrega/">NOVA</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/nova_entrega/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">NOVA</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                             </ul>
                         </li>
@@ -97,25 +183,43 @@
                                 OFÍCIOS
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/novo_oficio/">NOVO OFICIO</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/novo_oficio/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">NOVO OFICIO</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="http://localhost:8000/gerencias/lista_oficio/">LISTA OFÍCIOS</a></li>
+                                <li>
+                                    <form action="http://localhost:8000/gerencias/lista_oficio/" method="POST" style="display: inline; width: 100%;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">LISTA OFÍCIOS</button>
+                                    </form>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>                        
                             </ul>
                         </li>
                         {% if user.is_authenticated %}
-                            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary sm">
-                                    Sair
-                                </button>
-                            </form>
+                            <li class="nav-item">
+                                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary sm">
+                                        Sair
+                                    </button>
+                                </form>
+                            </li>
                         {% else %}
                             <li class="nav-item">
-                                <a href="{% url 'signup' %}" class="nav-link active" aria-disabled="true">Cadastrar</a>
+                                <form action="{% url 'signup' %}" method="POST" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="nav-link active" style="background: none; border: none; color: inherit;">Cadastrar</button>
+                                </form>
                             </li>
                             <li class="nav-item">
-                                <a href="{% url 'login' %}" class="nav-link active" aria-disabled="true" >Entrar</a>
+                                <form action="{% url 'login' %}" method="POST" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="nav-link active" style="background: none; border: none; color: inherit;">Entrar</button>
+                                </form>
                             </li>
                         {% endif %}
                     </ul>

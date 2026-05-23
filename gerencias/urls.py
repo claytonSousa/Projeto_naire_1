@@ -33,26 +33,43 @@ urlpatterns = [
     path('gerencias/lista_filhos/<int:id_responsavel>',views.lista_filhos, name='lista_filhos'),
     path('gerencias/lista_filhos_total/',views.lista_filhos_total, name='lista_filhos_total'),
     path('gerencias/insere_filho/',views.insere_novo_filho, name='insere_novo_filho'),
-    path('gerencias/desativar_filho/<int:id_filho>',views.desativar_filho, name='desativar_filho'),
+    path('gerencias/desativar_filho/<int:id_responsavel>/',views.desativar_filho, name='desativar_filho'),
+    path('gerencias/reativar_filho/<int:id_filho>/',views.reativar_filho, name='reativar_filho'),
     path('gerencias/editar_filho/<int:id_filho>',views.editar_filho, name='editar_filho'),
     path('gerencias/buscar_filhos/', views.buscar_filhos, name='buscar_filhos'),
+    path('gerencias/novo_filho/<int:id_responsavel>', views.novo_filho, name='novo_filho'),
 
 
     path('gerencias/novo_oficio/', views.novo_oficio, name='novo_oficio'),
     path('gerencias/lista_oficio/', views.lista_oficio, name='lista_oficio'),
     path('gerencias/insere_novo_oficio/', views.insere_novo_oficio, name='insere_novo_oficio'),
     path('gerencias/excluir_oficio/<int:id_oficio>', views.excluir_oficio, name='excluir_oficio'),
+    path('gerencias/exibe_oficio/<int:id_oficio>', views.exibe_oficio, name='exibe_oficio'),
 
 
     path('gerencias/novo_madrinha_padrinho/', views.novo_madrinha_padrinho, name='novo_madrinha_padrinho'),
     path('gerencias/inserir_madrinha_padrinho/', views.inserir_madrinha_padrinho, name='inserir_madrinha_padrinho'),
     path('gerencias/lista_madrinha_padrinho/', views.lista_madrinha_padrinho, name='lista_madrinha_padrinho'),
+    path('gerencias/lista_madrinha_padrinho_desativados/', views.lista_madrinha_padrinho_desativados, name='lista_madrinha_padrinho_desativados'),
     path('gerencias/editar_madrinha_padrinho/<int:id_mad_pad>/', views.editar_madrinha_padrinho, name='editar_madrinha_padrinho'),
+    path('gerencias/atualiza_madrinha_padrinho/<int:id_mad_pad>/', views.atualiza_madrinha_padrinho, name='atualiza_madrinha_padrinho'),
     path('gerencias/apadrinhar_crianca/<int:id_mad_pad>/', views.apadrinhar_crianca, name='apadrinhar_crianca'),
     path('gerencias/vincular_mad_pad_crianca/', views.vincular_mad_pad_crianca, name='vincular_mad_pad_crianca'),
     path('gerencias/reativar_madrinha_padrinho/<int:id_mad_pad>/', views.reativar_madrinha_padrinho, name='reativar_madrinha_padrinho'),
     path('gerencias/lista_apadrinhamento/', views.lista_apadrinhamento, name='lista_apadrinhamento'),
 
 
+    path('gerencias/novo_evento/', views.novo_evento, name='novo_evento'),
+    path('gerencias/listar_eventos/', views.listar_eventos, name='listar_eventos'),
+    path('gerencias/insere_novo_evento/', views.insere_novo_evento, name='insere_novo_evento'),
+    path('gerencias/editar_evento/<int:id_evento>/', views.editar_evento, name='editar_evento'),
+    path('gerencias/atualiza_evento/<int:id_evento>/', views.atualiza_evento, name='atualiza_evento'),
+    path('gerencias/finalizar_evento/<int:id_evento>/', views.finalizar_evento, name='finalizar_evento'),
+
+
+    path('gerencias/nova_entrega/<int:id_evento>/', views.nova_entrega, name='nova_entrega'),
+    path('gerencias/listar_entregas/<int:id_evento>', views.listar_entregas, name='listar_entregas'),
+    path('gerencias/insere_nova_entrega/', views.insere_nova_entrega, name='insere_nova_entrega'),
+    path('gerencias/editar_entrega/<int:id_entrega>/', views.editar_entrega, name='editar_entrega'),
 
 ]

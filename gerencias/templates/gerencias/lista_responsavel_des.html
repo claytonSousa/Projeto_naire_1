@@ -210,13 +210,20 @@
                         </td>
                         <td>
                             <div class="btn-group" role="group">
-                                <a href="{% url 'reativar_responsavel' id_responsavel=item.id_responsavel %}" 
-                                   class="btn btn-outline-success btn-sm reativar-btn"
-                                   data-bs-toggle="tooltip" 
-                                   title="Reativar responsável"
-                                   data-nome="{{ item.pnome }} {{ item.snome }}">
-                                    <i class="bi bi-arrow-repeat"></i> Reativar
-                                </a>
+                                <form action="{% url 'reativar_responsavel' id_responsavel=item.id_responsavel %}" 
+                                    method="POST" 
+                                    style="display: inline-block;"
+                                    class="reativar-form"
+                                    data-id="{{ item.id_responsavel }}"
+                                    data-nome="{{ item.pnome }} {{ item.snome }}">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-outline-success btn-sm reativar-btn"
+                                            data-bs-toggle="tooltip" 
+                                            title="Reativar responsável">
+                                        <i class="bi bi-arrow-repeat"></i> Reativar
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
