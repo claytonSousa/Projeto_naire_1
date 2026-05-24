@@ -22,10 +22,13 @@
                         </p>
                     </div>
                     <div>
-                        <a href="{% url 'novo_oficio' %}" class="btn btn-success btn-lg shadow-sm">
-                            <i class="bi bi-plus-circle-fill"></i> 
-                            Novo Ofício
-                        </a>
+                        <form action="{% url 'novo_oficio' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                                <i class="bi bi-plus-circle-fill"></i> 
+                                Novo Ofício
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <hr class="my-3">

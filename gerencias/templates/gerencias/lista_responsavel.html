@@ -22,10 +22,12 @@
                         </p>
                     </div>
                     <div>
-                        <a href="{% url 'novo_responsavel' %}" class="btn btn-success btn-lg shadow-sm">
-                            <i class="bi bi-person-plus-fill"></i> 
-                            Novo Responsável
-                        </a>
+                        <form action="{% url 'novo_responsavel' %}" method="post" class="mt-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus-fill"></i> Nvo responsável
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <hr class="my-3">
@@ -221,12 +223,12 @@
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </button>
                                 </form>
-                                <a href="{% url 'lista_filhos' id_responsavel=item.id_responsavel %}" 
-                                   class="btn btn-outline-info btn-sm"
-                                   data-bs-toggle="tooltip" 
-                                   title="Ver filhos">
-                                    <i class="bi bi-people"></i> Filhos
-                                </a>
+                                    <a href="{% url 'lista_filhos' id_responsavel=item.id_responsavel %}" 
+                                        class="btn btn-outline-info btn-sm"
+                                        data-bs-toggle="tooltip" 
+                                        title="Ver filhos">
+                                        <i class="bi bi-people"></i> Filhos
+                                    </a>
                                 <form action="{% url 'desativar_responsavel' id_responsavel=item.id_responsavel %}" 
                                     method="POST" 
                                     style="display: inline-block;"
@@ -249,9 +251,12 @@
                         <td colspan="10" class="text-center py-5">
                             <i class="bi bi-inbox display-1 text-muted"></i>
                             <p class="mt-3 text-muted">Nenhum responsável cadastrado ainda.</p>
-                            <a href="{% url 'novo_responsavel' %}" class="btn btn-primary mt-2">
-                                <i class="bi bi-person-plus-fill"></i> Cadastrar primeiro responsável
-                            </a>
+                            <form action="{% url 'novo_responsavel' %}" method="post" class="mt-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-person-plus-fill"></i> Cadastrar primeiro responsável
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}

@@ -1,21 +1,299 @@
 {% extends 'bases.html' %}
+{% load static %}
 
 {% block page_title %}
-    PÁGINA DE LOGIN
-{% endblock%}
+    Login | NAIRE
+{% endblock %}
 
 {% block container %}
-    <div class="card">
-        <div class="card-head">
-            <h5 class="card-title">REGISTRO DE USUARIO</h5>
-        </div>
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn-success">Enviar</button>
-            </form>
+<div class="login-container">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-5 col-md-7 col-10">
+                <!-- Card principal -->
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <!-- Header gradiente -->
+                    <div class="card-header bg-gradient-primary text-white text-center p-4 border-0">
+                        <div class="mb-3">
+                            <i class="bi bi-shield-lock-fill fs-1"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1">Bem-vindo(a)</h3>
+                        <p class="mb-0 opacity-75">Acesse o sistema NAIRE</p>
+                    </div>
+                    
+                    <!-- Corpo do formulário -->
+                    <div class="card-body p-4 p-lg-5">
+                        <form method="post" class="needs-validation">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Campo Usuário -->
+                            <div class="mb-4">
+                                <label for="id_username" class="form-label fw-semibold">
+                                    <i class="bi bi-person-circle me-1"></i> Usuário
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-person text-muted"></i>
+                                    </span>
+                                    <input type="text" 
+                                           name="username" 
+                                           id="id_username" 
+                                           class="form-control form-control-lg border-start-0" 
+                                           placeholder="Digite seu usuário"
+                                           autofocus
+                                           required>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Por favor, informe seu usuário.
+                                </div>
+                            </div>
+                            
+                            <!-- Campo Senha -->
+                            <div class="mb-4">
+                                <label for="id_password" class="form-label fw-semibold">
+                                    <i class="bi bi-key me-1"></i> Senha
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="bi bi-lock text-muted"></i>
+                                    </span>
+                                    <input type="password" 
+                                           name="password" 
+                                           id="id_password" 
+                                           class="form-control form-control-lg border-start-0" 
+                                           placeholder="Digite sua senha"
+                                           required>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Por favor, informe sua senha.
+                                </div>
+                            </div>
+                            
+                            <!-- Lembrar-me (opcional) -->
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                                <label class="form-check-label text-muted" for="remember">
+                                    <i class="bi bi-check-square"></i> Lembrar-me
+                                </label>
+                            </div>
+                            
+                            <!-- Botão de envio -->
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                                <i class="bi bi-box-arrow-in-right"></i> Entrar no Sistema
+                            </button>
+                            
+                            <!-- Links adicionais -->
+                            <div class="text-center mt-3">
+                                <a href="#" class="text-decoration-none small text-muted">
+                                    <i class="bi bi-question-circle"></i> Esqueceu sua senha?
+                                </a>
+                                <span class="mx-2 text-muted">|</span>
+                                <a href="#" class="text-decoration-none small text-muted">
+                                    <i class="bi bi-person-plus"></i> Criar nova conta
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="card-footer bg-light text-center py-3 border-0">
+                        <small class="text-muted">
+                            <i class="bi bi-heart-fill text-danger"></i> 
+                            Sistema NAIRE - Apoio a crianças
+                        </small>
+                    </div>
+                </div>
+                
+                <!-- Informação adicional -->
+                <div class="text-center mt-4">
+                    <p class="text-white-50 small">
+                        <i class="bi bi-shield-check"></i> Ambiente seguro | 
+                        <i class="bi bi-clock-history"></i> Sessão expira em 30 min
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 
-{% endblock%}
+<style>
+    /* Container com gradiente de fundo */
+    .login-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Efeito de ondas no fundo */
+    .login-container::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        clip-path: polygon(0 100%, 0 60%, 100% 30%, 100% 100%);
+    }
+    
+    /* Gradiente para o header */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+    }
+    
+    /* Card com animação */
+    .card {
+        animation: fadeInUp 0.6s ease-out;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Estilização dos campos */
+    .form-control, .input-group-text {
+        transition: all 0.3s ease;
+        border-color: #e9ecef;
+    }
+    
+    .form-control:focus, .input-group-text:focus {
+        border-color: #1abc9c;
+        box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.25);
+    }
+    
+    .form-control:focus {
+        border-left-color: transparent;
+    }
+    
+    .input-group:focus-within .input-group-text {
+        border-color: #1abc9c;
+        background-color: #fff;
+    }
+    
+    /* Botão primário */
+    .btn-primary {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        border: none;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(26, 188, 156, 0.4);
+    }
+    
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+    
+    /* Checkbox personalizado */
+    .form-check-input:checked {
+        background-color: #1abc9c;
+        border-color: #1abc9c;
+    }
+    
+    /* Links */
+    a {
+        transition: color 0.3s ease;
+    }
+    
+    a:hover {
+        color: #1abc9c !important;
+    }
+    
+    /* Alertas */
+    .alert {
+        border-radius: 12px;
+        border-left: 4px solid #e74c3c;
+    }
+    
+    /* Animações */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-lg {
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+        }
+    }
+    
+    /* Remover setas do input number se houver */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    /* Placeholder estilizado */
+    ::placeholder {
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+    
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #1abc9c;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #16a085;
+    }
+    
+    /* Ícones */
+    .bi {
+        vertical-align: middle;
+    }
+    
+    /* Validação visual */
+    .form-control:invalid {
+        border-color: #e74c3c;
+    }
+    
+    /* Altura mínima para alinhamento vertical */
+    .min-vh-100 {
+        min-height: 100vh;
+    }
+</style>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% endblock %}

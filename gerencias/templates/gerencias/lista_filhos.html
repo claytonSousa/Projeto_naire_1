@@ -240,11 +240,10 @@
                 </p>
             </div>
             <div class="col-md-6 text-md-end">
-                <form method="post" action="{% url 'novo_filho' id_responsavel=id_responsavel %}">
+                <form action="{% url 'novo_filho' id_responsavel=id_responsavel %}" method="post" class="mt-2">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-success btn-lg shadow-sm">
-                        <i class="bi bi-person-plus-fill"></i> 
-                        Inserir Criança
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus-fill"></i> Adicional Filho
                     </button>
                 </form>
             </div>

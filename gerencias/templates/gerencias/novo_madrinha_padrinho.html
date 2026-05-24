@@ -1,53 +1,453 @@
-{% extends 'bases.html'%}
-    
+{% extends 'bases.html' %}
+{% load static %}
+
 {% block page_title %}
-    CADASTRO DE MADRINHAS E OU PADRINHOS
+    Cadastro de Madrinhas e Padrinhos | NAIRE
 {% endblock %}
+
 {% block container %}
-    <br><br>
-    <div>
-        <h3>NOVA(O) MADRINHA OU PADRINHO</h3>
-        
-        <form action="{% url 'inserir_madrinha_padrinho' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="id_usuario_cad" value="{{ id_usuario_cad }}">
-            <br><br>
-            <input type="text" placeholder="CPF" name="cpf">
-            <br><br>
-            <label>ANONIMATO?</label>
-            <select  name="anonimo">
-                <option value="S">Sim</option>
-                <option value="N" select>Não</option>
-            </select>
-            <br><br>
-            <input type="text" placeholder="NOME" name="pnome">
-            <br><br>
-            <input type="text" placeholder="SOBRENOME" name="snome">
-            <br><br>
-            <input type="text" placeholder="RUA, NÚMERO" name="endereco">
-            <br><br>
-            <input type="text" placeholder="COMPLEMENTO" name="complemento">
-            <br><br>
-            <input type="text" placeholder="BAIRRO" name="bairro">
-            <br><br>
-            <input type="text" placeholder="CIDADE" name="cidade">
-            <br><br>
-            <label>UF</label>
-            <select  name="estado">
-                <option value="SP">SP</option>
-                <option value="RJ">RJ</option>
-                <option value="MG">MG</option>
-                <option value="SC">SC</option>
-                <option value="BA">BA</option>
-                <option value="AM">AM</option>
-            </select>
-            <br><br>
-            <label>ATIVO?</label>
-            <select  name="flag_ativo">
-                <option value="S">Sim</option>
-                <option value="N" select>Não</option>
-            </select>
-            <button type="submit">Salvar</button>
-        </form>
+<div class="cadastro-container">
+    <div class="container-fluid py-4">
+        <!-- Header da página -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-2">
+                            <i class="bi bi-person-badge text-primary"></i> 
+                            Nova(o) Madrinha ou Padrinho
+                        </h1>
+                        <p class="text-muted lead mb-0">
+                            Cadastre novos apoiadores para as crianças da ONG NAIRE
+                        </p>
+                    </div>
+                    <div>
+                        <form action="{% url 'lista_madrinha_padrinho' %}" method="POST" style="display: inline-block;">
+                            <button type="submit" class="btn btn-outline-secondary btn-lg shadow-sm">
+                                <i class="bi bi-arrow-left"></i> 
+                                Voltar para Lista
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <hr class="my-3">
+            </div>
+        </div>
+
+        <!-- Formulário principal -->
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-header bg-gradient-primary text-white rounded-top-4 p-4">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-plus-fill fs-1 me-3"></i>
+                            <div>
+                                <h3 class="mb-0 fw-bold">Formulário de Cadastro</h3>
+                                <p class="mb-0 opacity-75">Preencha os dados da madrinha ou padrinho</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body p-4 p-lg-5">
+                        <form action="{% url 'inserir_madrinha_padrinho' %}" method="POST" id="cadastroForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="id_usuario_cad" value="{{ id_usuario_cad }}">
+                            
+                            <!-- Seção: Dados Pessoais -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="bi bi-person-circle fs-3 text-primary me-2"></i>
+                                    <h4 class="mb-0 fw-semibold">Dados Pessoais</h4>
+                                    <div class="flex-grow-1 ms-3"><hr class="my-0"></div>
+                                </div>
+                                
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-upc-scan text-muted"></i> CPF
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               placeholder="000.000.000-00" 
+                                               name="cpf"
+                                               id="cpf"
+                                               maxlength="14">
+                                        <small class="text-muted">Digite apenas números</small>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-incognito text-muted"></i> Anonimato
+                                        </label>
+                                        <select name="anonimo" class="form-select form-select-lg">
+                                            <option value="S">🔒 Sim - Desejo permanecer anônimo</option>
+                                            <option value="N" selected>👤 Não - Desejo me identificar</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-person-standing text-muted"></i> Nome
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               placeholder="Digite o nome" 
+                                               name="pnome"
+                                               required>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-person-lines-fill text-muted"></i> Sobrenome
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               placeholder="Digite o sobrenome" 
+                                               name="snome"
+                                               required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção: Endereço -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="bi bi-geo-alt-fill fs-3 text-primary me-2"></i>
+                                    <h4 class="mb-0 fw-semibold">Endereço</h4>
+                                    <div class="flex-grow-1 ms-3"><hr class="my-0"></div>
+                                </div>
+                                
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-house-door text-muted"></i> Logradouro
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               placeholder="Rua, Avenida, Número" 
+                                               name="endereco"
+                                               required>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-pin-angle text-muted"></i> Complemento
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               placeholder="Apto, Bloco, Casa..." 
+                                               name="complemento">
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-map text-muted"></i> Bairro
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               placeholder="Digite o bairro" 
+                                               name="bairro"
+                                               required>
+                                    </div>
+                                    
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-building text-muted"></i> Cidade
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               placeholder="Digite a cidade" 
+                                               name="cidade"
+                                               required>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-flag text-muted"></i> UF
+                                        </label>
+                                        <select name="estado" class="form-select form-select-lg" required>
+                                            <option value="">Selecione o estado</option>
+                                            <option value="AC">Acre (AC)</option>
+                                            <option value="AL">Alagoas (AL)</option>
+                                            <option value="AP">Amapá (AP)</option>
+                                            <option value="AM">Amazonas (AM)</option>
+                                            <option value="BA">Bahia (BA)</option>
+                                            <option value="CE">Ceará (CE)</option>
+                                            <option value="DF">Distrito Federal (DF)</option>
+                                            <option value="ES">Espírito Santo (ES)</option>
+                                            <option value="GO">Goiás (GO)</option>
+                                            <option value="MA">Maranhão (MA)</option>
+                                            <option value="MT">Mato Grosso (MT)</option>
+                                            <option value="MS">Mato Grosso do Sul (MS)</option>
+                                            <option value="MG">Minas Gerais (MG)</option>
+                                            <option value="PA">Pará (PA)</option>
+                                            <option value="PB">Paraíba (PB)</option>
+                                            <option value="PR">Paraná (PR)</option>
+                                            <option value="PE">Pernambuco (PE)</option>
+                                            <option value="PI">Piauí (PI)</option>
+                                            <option value="RJ">Rio de Janeiro (RJ)</option>
+                                            <option value="RN">Rio Grande do Norte (RN)</option>
+                                            <option value="RS">Rio Grande do Sul (RS)</option>
+                                            <option value="RO">Rondônia (RO)</option>
+                                            <option value="RR">Roraima (RR)</option>
+                                            <option value="SC">Santa Catarina (SC)</option>
+                                            <option value="SP">São Paulo (SP)</option>
+                                            <option value="SE">Sergipe (SE)</option>
+                                            <option value="TO">Tocantins (TO)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção: Status -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="bi bi-toggle-on fs-3 text-primary me-2"></i>
+                                    <h4 class="mb-0 fw-semibold">Status do Cadastro</h4>
+                                    <div class="flex-grow-1 ms-3"><hr class="my-0"></div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-activity text-muted"></i> Ativo?
+                                        </label>
+                                        <select name="flag_ativo" class="form-select form-select-lg">
+                                            <option value="S">✅ Sim - Ativo</option>
+                                            <option value="N" selected>⛔ Não - Inativo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botões de ação -->
+                            <div class="d-flex gap-3 mt-4 pt-3">
+                                <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                    <i class="bi bi-check-lg"></i> Salvar Cadastro
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary btn-lg">
+                                    <i class="bi bi-eraser"></i> Limpar
+                                </button>
+                                <form action="{% url 'lista_madrinha_padrinho' %}" method="POST" style="display: inline-block;">
+                                    <button type="submit" class="btn btn-outline-danger btn-lg">
+                                        <i class="bi bi-x-lg"></i> Cancelar
+                                    </button>
+                                </form>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<style>
+    /* Container com gradiente de fundo */
+    .cadastro-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: calc(100vh - 56px);
+    }
+    
+    /* Gradiente para o header do card */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+    }
+    
+    /* Cards e formulários */
+    .card {
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+    }
+    
+    /* Estilização dos campos de formulário */
+    .form-control, .form-select {
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #1abc9c;
+        box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.25);
+    }
+    
+    .form-control:hover, .form-select:hover {
+        border-color: #1abc9c;
+    }
+    
+    /* Labels */
+    .form-label {
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+    }
+    
+    /* Botões */
+    .btn-primary {
+        background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%);
+        border: none;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(26, 188, 156, 0.4);
+    }
+    
+    .btn-outline-secondary, .btn-outline-danger {
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover, .btn-outline-danger:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* Animações */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    /* Input group e ícones */
+    .input-group-text {
+        background-color: transparent;
+        border-right: none;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        
+        .btn-lg {
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+        }
+        
+        .d-flex.gap-3 {
+            flex-direction: column;
+        }
+        
+        .d-flex.gap-3 .btn,
+        .d-flex.gap-3 form {
+            width: 100%;
+        }
+    }
+    
+    /* Campos obrigatórios */
+    .form-label:after {
+        content: " *";
+        color: #e74c3c;
+        font-weight: bold;
+    }
+    
+    /* Select personalizado */
+    .form-select {
+        cursor: pointer;
+    }
+    
+    /* Divisórias */
+    hr {
+        opacity: 0.3;
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #1abc9c;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #16a085;
+    }
+    
+    /* Ajuste para botões dentro de forms */
+    form button {
+        width: 100%;
+    }
+    
+    .d-flex.gap-3 form {
+        flex: 1;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Máscara para CPF
+        const cpfInput = document.getElementById('cpf');
+        if (cpfInput) {
+            cpfInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                    value = value.replace(/(\d{3})(\d{2})$/, '$1-$2');
+                    e.target.value = value;
+                }
+            });
+        }
+        
+        // Validação antes de enviar
+        const form = document.getElementById('cadastroForm');
+        form.addEventListener('submit', function(e) {
+            const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+            if (cpf && cpf.length !== 11) {
+                e.preventDefault();
+                alert('⚠️ Por favor, digite um CPF válido com 11 dígitos.');
+                return false;
+            }
+            
+            if (!confirm('✅ Confirmar cadastro da madrinha/padrinho?')) {
+                e.preventDefault();
+            }
+        });
+        
+        // Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 {% endblock %}

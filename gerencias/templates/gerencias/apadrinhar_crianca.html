@@ -107,7 +107,7 @@
                                             <div>
                                                 <strong>{{ filho.pnome }} {{ filho.snome }}</strong>
                                                 <br>
-                                                <small class="text-muted">ID Resp: #{{ id_responsavel|default:filho.id_responsavel }}</small>
+                                                <small class="text-muted">ID Resp: #{{ id_responsavel|default:filho.id_responsavel.id_responsavel }}</small>
                                             </div>
                                         </div>
                                     </td>
@@ -145,14 +145,23 @@
                                     </td>
                                     <td>
                                         <div class="text-center">
-                                            <a href="{% url 'vincular_mad_pad_crianca' %}?id_mad_pad={{ registro.id_mad_pad }}&id_filho={{ filho.id_filho }}" 
-                                               class="btn btn-success btn-sm vincular-btn"
-                                               data-bs-toggle="tooltip" 
-                                               title="Vincular apadrinhamento"
-                                               data-crianca="{{ filho.pnome }} {{ filho.snome }}"
-                                               data-padrinho="{{ registro.pnome }} {{ registro.snome }}">
-                                                <i class="bi bi-gift-fill"></i> Apadrinhar
-                                            </a>
+                                            <form action="{% url 'vincular_mad_pad_crianca'  %}" 
+                                                method="POST" 
+                                                onsubmit="return confirmaVinculacao()"
+                                                style="display: inline-block;"
+                                                class="vincular-form"
+                                                data-crianca="{{ filho.pnome }} {{ filho.snome }}"
+                                                data-padrinho="{{ registro.pnome }} {{ registro.snome }}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="id_mad_pad" value="{{ registro.id_mad_pad }}">
+                                                <input type="hidden" name="id_filho" value="{{ filho.id_filho }}"> 
+                                                <button type="submit" 
+                                                        class="btn btn-success btn-sm vincular-btn"
+                                                        data-bs-toggle="tooltip" 
+                                                        title="Vincular apadrinhamento">
+                                                    <i class="bi bi-gift-fill"></i> Apadrinhar
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -180,9 +189,14 @@
                     <div class="text-center py-5">
                         <i class="bi bi-emoji-frown display-1 text-muted"></i>
                         <p class="mt-3 text-muted">Nenhuma criança disponível para apadrinhamento.</p>
-                        <a href="{% url 'cadastro_familia' %}" class="btn btn-primary mt-2">
-                            <i class="bi bi-person-plus-fill"></i> Cadastrar família primeiro
-                        </a>
+                        <form action="{% url 'cadastro_familia' %}" 
+                            method="POST" 
+                            style="display: inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary mt-2">
+                                <i class="bi bi-person-plus-fill"></i> Cadastrar família primeiro
+                            </button>
+                        </form>
                     </div>
                 {% endif %}
             </div>
@@ -358,6 +372,12 @@
 </style>
 
 <script>
+    //Funca de confirmacao
+    function confirmaVinculacao(){
+        var resposta = confirm("Confirmar Apadrinhamento?");
+        return resposta; 
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Função para calcular idade
         function calcularIdade(dataNascimento) {
@@ -420,53 +440,6 @@
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
         
-        // Confirmação antes de vincular
-        const vincularBtns = document.querySelectorAll('.vincular-btn');
-        vincularBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const crianca = this.getAttribute('data-crianca');
-                const padrinho = this.getAttribute('data-padrinho');
-                const url = this.getAttribute('href');
-                
-                Swal.fire({
-                    title: 'Confirmar Apadrinhamento',
-                    html: `
-                        <div class="text-center">
-                            <i class="bi bi-gift-fill" style="font-size: 48px; color: #27ae60;"></i>
-                            <p class="mt-3">
-                                <strong>${padrinho}</strong> irá apadrinhar<br>
-                                <strong>${crianca}</strong>
-                            </p>
-                            <p class="text-muted small mt-2">
-                                Deseja confirmar este apadrinhamento?
-                            </p>
-                        </div>
-                    `,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#27ae60',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '✅ Sim, apadrinhar',
-                    cancelButtonText: '❌ Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Mostrar loading
-                        Swal.fire({
-                            title: 'Processando...',
-                            text: 'Estamos vinculando o apadrinhamento.',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-                        
-                        // Redirecionar para a URL
-                        window.location.href = url;
-                    }
-                });
-            });
-        });
         
         // Formatar CPF se existir
         const cpfElement = document.querySelector('.bg-gradient-primary .badge');

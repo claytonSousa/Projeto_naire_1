@@ -216,6 +216,7 @@
                                         data-id="{{ filho.id_filho }}"
                                         data-nome="{{ filho.pnome }} {{ filho.snome }}">
                                         {% csrf_token %}
+                                        <input type="hidden" name="id_filho" value="{{filho.id_filho}}">
                                         <button type="submit" 
                                                 class="btn btn-outline-danger btn-sm desativar-btn"
                                                 data-bs-toggle="tooltip" 
@@ -231,6 +232,7 @@
                                         data-id="{{ filho.id_filho }}"
                                         data-nome="{{ filho.pnome }} {{ filho.snome }}">
                                         {% csrf_token %}
+                                        <input type="hidden" name="id_filho" value="{{ilho.id_filho}}">
                                         <button type="submit" 
                                                 class="btn btn-outline-success btn-sm reativar-btn"
                                                 data-bs-toggle="tooltip" 

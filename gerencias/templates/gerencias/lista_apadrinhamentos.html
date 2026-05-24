@@ -124,15 +124,14 @@
                         <th scope="col">👶 CRIANÇA</th>
                         <th scope="col">📅 DATA CADASTRO</th>
                         <th scope="col">✅ STATUS</th>
-                        <th scope="col" class="text-center">⚙️ AÇÕES</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for apad in registro %}
+                    {% for apad in registros %}
                     <tr class="apad-row" 
                         data-status="{{ apad.flag_ativo }}"
-                        data-id-crianca="{{ apad.id_filho }}"
-                        data-id-padrinho="{{ apad.id_mad_pad }}">
+                        data-id-crianca="{{ apad.id_filho.id_filho }}"
+                        data-id-padrinho="{{ apad.id_mad_pad.id_mad_pad }}">
                         <td class="px-4 fw-bold">#{{ apad.id_apadrinhamento }}</td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -144,7 +143,7 @@
                                     <br>
                                     <small class="text-muted">
                                         <i class="bi bi-clock-history"></i> 
-                                        ID: {{ mad_pad }}
+                                        ID: {{ apad.id_apadrinhamento }}
                                     </small>
                                 </div>
                             </div>
@@ -153,24 +152,18 @@
                             <div class="d-flex align-items-center">
                                 <div class="avatar-circle-sm me-3">
                                     <span class="initials">
-                                        {% with id=apad.id_mad_pad|stringformat:"s" %}
-                                            {{ id|slice:":1" }}
-                                        {% endwith %}
+                                        {{ apad.id_mad_pad.pnome|slice:":1" }}{{ apad.id_mad_pad.snome|slice:":1" }}
                                     </span>
                                 </div>
                                 <div>
-                                    <strong>ID: #{{ apad.id_mad_pad }}</strong>
+                                    <strong>{{ apad.id_mad_pad.pnome }} {{ apad.id_mad_pad.snome }}</strong>
                                     <br>
                                     <span class="badge bg-primary bg-opacity-10 text-primary">
                                         <i class="bi bi-person-badge"></i> 
-                                        {% if apad.tipo_padrinho == 'M' %}
-                                            Madrinha
-                                        {% elif apad.tipo_padrinho == 'P' %}
-                                            Padrinho
-                                        {% else %}
-                                            Padrinho/Madrinha
-                                        {% endif %}
+                                        {% if apad.id_mad_pad.cpf %}Madrinha/Padrinho{% else %}Anônimo{% endif %}
                                     </span>
+                                    <br>
+                                    <small class="text-muted">ID: #{{ apad.id_mad_pad.id_mad_pad }}</small>
                                 </div>
                             </div>
                         </td>
@@ -178,20 +171,20 @@
                             <div class="d-flex align-items-center">
                                 <div class="avatar-circle-sm me-3 bg-gradient-child">
                                     <span class="initials">
-                                        {% with id=apad.id_filho|stringformat:"s" %}
-                                            {{ id|slice:":1" }}
-                                        {% endwith %}
+                                        {{ apad.id_filho.pnome|slice:":1" }}{{ apad.id_filho.snome|slice:":1" }}
                                     </span>
                                 </div>
                                 <div>
-                                    <strong>ID: #{{ apad.id_filho }}</strong>
+                                    <strong>{{ apad.id_filho.pnome }} {{ apad.id_filho.snome }}</strong>
                                     <br>
                                     <span class="badge bg-info bg-opacity-10 text-info">
                                         <i class="bi bi-people-fill"></i> Criança
                                     </span>
+                                    <br>
+                                    <small class="text-muted">ID: #{{ apad.id_filho.id_filho }}</small>
                                 </div>
                             </div>
-                         </td>
+                        </td>
                         <td>
                             <small>
                                 <i class="bi bi-calendar3 text-muted"></i>
@@ -211,33 +204,6 @@
                                 </span>
                             {% endif %}
                         </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a href="#" 
-                                   class="btn btn-outline-primary btn-sm" 
-                                   data-bs-toggle="tooltip" 
-                                   title="Editar apadrinhamento">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                {% if apad.flag_ativo == 'S' %}
-                                <a href="#" 
-                                   class="btn btn-outline-danger btn-sm desativar-btn"
-                                   data-bs-toggle="tooltip" 
-                                   title="Desativar apadrinhamento"
-                                   data-id="{{ apad.id_apadrinhamento }}">
-                                    <i class="bi bi-x-circle-fill"></i> Desativar
-                                </a>
-                                {% else %}
-                                <a href="#" 
-                                   class="btn btn-outline-success btn-sm"
-                                   data-bs-toggle="tooltip" 
-                                   title="Reativar apadrinhamento"
-                                   data-id="{{ apad.id_apadrinhamento }}">
-                                    <i class="bi bi-arrow-repeat"></i> Reativar
-                                </a>
-                                {% endif %}
-                            </div>
-                        </td>
                     </tr>
                     {% empty %}
                     <tr>
@@ -248,6 +214,8 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+                Se os nomes dos campos forem diferentes, ajuste conforme seu modelo:
+                Para acessar campos de 
             </table>
         </div>
 

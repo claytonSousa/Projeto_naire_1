@@ -67,8 +67,8 @@ urlpatterns = [
     path('gerencias/finalizar_evento/<int:id_evento>/', views.finalizar_evento, name='finalizar_evento'),
 
 
-    path('gerencias/nova_entrega/<int:id_evento>/', views.nova_entrega, name='nova_entrega'),
-    path('gerencias/listar_entregas/<int:id_evento>', views.listar_entregas, name='listar_entregas'),
+    path('gerencias/nova_entrega/', views.nova_entrega, name='nova_entrega'),
+    path('gerencias/listar_entregas/', views.listar_entregas, name='listar_entregas'),
     path('gerencias/insere_nova_entrega/', views.insere_nova_entrega, name='insere_nova_entrega'),
     path('gerencias/editar_entrega/<int:id_entrega>/', views.editar_entrega, name='editar_entrega'),
 

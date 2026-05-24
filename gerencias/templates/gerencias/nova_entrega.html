@@ -12,7 +12,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="d-flex align-items-center gap-3">
-                    <form action="{% url 'listar_entregas' id_evento=evento.id_evento %}" method="POST" style="display: inline-block;">
+                    <form action="{% url 'listar_entregas' %}" method="POST" style="display: inline-block;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-arrow-left"></i> Voltar
@@ -101,7 +101,7 @@
 
                             <!-- Botões de ação -->
                             <div class="d-flex gap-3 justify-content-end mt-5 pt-3 border-top">
-                                <form action="{% url 'listar_entregas' id_evento=evento.id_evento %}" method="POST" style="display: inline-block;">
+                                <form action="{% url 'listar_entregas' %}" method="POST" style="display: inline-block;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-secondary btn-lg px-4">
                                         <i class="bi bi-x-circle"></i> Cancelar
@@ -337,86 +337,6 @@
                 }
             });
         }
-        
-        // Validação do formulário
-        const form = document.getElementById('novaEntregaForm');
-        
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validar campos obrigatórios
-            const requiredFields = form.querySelectorAll('[required]');
-            let isValid = true;
-            let firstEmpty = null;
-            
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    isValid = false;
-                    if (!firstEmpty) firstEmpty = field;
-                } else {
-                    field.classList.remove('is-invalid');
-                }
-            });
-            
-            if (!isValid) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Campos obrigatórios',
-                    text: 'Por favor, preencha todos os campos obrigatórios.',
-                    confirmButtonColor: '#1abc9c'
-                });
-                if (firstEmpty) firstEmpty.focus();
-                return;
-            }
-            
-            // Obter valores selecionados
-            const eventoSelect = document.querySelector('select[name="id_evento"]');
-            const apoiadorSelect = document.querySelector('select[name="id_mad_pad"]');
-            const criancaSelect = document.querySelector('select[name="id_crianca"]');
-            const endereco = document.querySelector('input[name="endereco"]').value;
-            const cidade = document.querySelector('input[name="cidade"]').value;
-            
-            const eventoNome = eventoSelect.options[eventoSelect.selectedIndex]?.text || '';
-            const apoiadorNome = apoiadorSelect.options[apoiadorSelect.selectedIndex]?.text || '';
-            const criancaNome = criancaSelect.options[criancaSelect.selectedIndex]?.text || '';
-            
-            // Confirmar cadastro
-            Swal.fire({
-                title: 'Confirmar cadastro',
-                html: `
-                    <div class="text-center">
-                        <i class="bi bi-truck" style="font-size: 48px; color: #1abc9c;"></i>
-                        <p class="mt-3">Deseja cadastrar esta entrega?</p>
-                        <div class="text-start mt-3">
-                            <small><strong>Evento:</strong> ${eventoNome}</small><br>
-                            <small><strong>Apoiador:</strong> ${apoiadorNome}</small><br>
-                            <small><strong>Criança:</strong> ${criancaNome}</small><br>
-                            <small><strong>Endereço:</strong> ${endereco}, ${cidade}</small>
-                        </div>
-                        <p class="text-muted small mt-2">Verifique os dados antes de confirmar.</p>
-                    </div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#1abc9c',
-                cancelButtonColor: '#95a5a6',
-                confirmButtonText: '✅ Sim, cadastrar',
-                cancelButtonText: '❌ Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Mostrar loading no botão
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Cadastrando...';
-                    submitBtn.disabled = true;
-                    submitBtn.classList.add('btn-loading');
-                    
-                    // Enviar formulário
-                    form.submit();
-                }
-            });
-        });
         
         // Remover classe is-invalid ao digitar
         const inputs = form.querySelectorAll('input, select');
